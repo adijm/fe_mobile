@@ -1,0 +1,49 @@
+name: aplikasi_mobile
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  font_awesome_flutter: ^10.5.0
+  cupertino_icons: ^1.0.8
+  dependencies:
+  http: ^0.13.5
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/book_icon.png
+    - assets/landing_image.png
+    - assets/facebook.png
+    - assets/google.png
+    - assets/apple.png
+    - assets/the_hobbit.jpg
+    - assets/perahu_kertas.jpg
+    - assets/habibie_ainun.jpg
+    - assets/planet_luna.jpg
+    - assets/aku_bisa_berhitung.jpg
+    - assets/informatika.jpg
+    - assets/sapiens.jpg
+    - assets/seni_teater.jpg
+    - assets/akhlak.jpg
+    - assets/social_contract.jpg
+    - assets/rahasia_pelangi.jpg
+    - assets/account_profile.png
+
+  fonts:
+    - family: DancingScript
+      fonts:
+        - asset: assets/fonts/DancingScript-VariableFont_wght.ttf
