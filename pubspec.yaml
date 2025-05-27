@@ -1,4 +1,4 @@
-name: aplikasi_mobile
+name: forumapp
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -12,7 +12,6 @@ dependencies:
     sdk: flutter
   font_awesome_flutter: ^10.5.0
   cupertino_icons: ^1.0.8
-  dependencies:
   http: ^0.13.5
 
 
