@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'library_child_screen.dart'; // pastikan file ini sudah dibuat
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
@@ -25,33 +26,43 @@ class LibraryScreen extends StatelessWidget {
             ),
 
             // Category Tabs
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Child',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LibraryChildScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Child',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  Text(
+                  const Text(
                     'Humanities',
                     style: TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
+                  const Text(
                     'Education',
                     style: TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
+                  const Text(
                     'Fiction',
                     style: TextStyle(
                       color: Colors.blue,

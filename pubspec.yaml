@@ -41,7 +41,9 @@ flutter:
     - assets/social_contract.jpg
     - assets/rahasia_pelangi.jpg
     - assets/account_profile.png
-
+    - assets/berhitung.png
+    - assets/dongeng_anak.png
+    - assets/belajar_membaca.png
   fonts:
     - family: DancingScript
       fonts:
