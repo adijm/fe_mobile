@@ -51,4 +51,32 @@ class ApiService {
       return false;
     }
   }
+
+  // Fungsi peminjaman buku
+  static Future<Map<String, dynamic>> borrowBook({
+    required int bukuId,
+    required int userId,
+    required String tenggatWaktu,
+  }) async {
+    final url = Uri.parse('http://127.0.0.1:8000/api/pinjamBuku');
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        'buku_id': bukuId,
+        'user_id': userId,
+        'tenggat_waktu': tenggatWaktu,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      final data = json.decode(response.body);
+      print('Peminjaman berhasil: $data');
+      return {'success': true, 'data': data};
+    } else {
+      print('Peminjaman gagal: ${response.body}');
+      return {'success': false, 'error': response.body};
+    }
+  }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-
-import 'library_screen.dart';
+import 'package:forumapp/screens/models/book_model.dart';
 import 'borrow_screen.dart';
+import 'library_screen.dart';
 import 'account_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,16 +19,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late List<Widget> _pages;
 
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
-      _buildHomeContent(),
-      const LibraryScreen(),
-      const BorrowScreen(),
-      AccountScreen(username: widget.userName), // Kirim username ke AccountScreen
-    ];
-  }
+@override
+void initState() {
+  super.initState();
+
+  // Dummy Book untuk testing
+  Book dummyBook = Book(
+    id: 1,
+    image: 'assets/the_hobbit.jpg',
+    category: 'Fantasi',
+    title: 'The Hobbit',
+    author: 'J.R.R. Tolkien',
+    description: 'Petualangan Bilbo Baggins mencari harta naga Smaug.',
+  );
+
+  _pages = [
+    _buildHomeContent(),
+    const LibraryScreen(),
+    BorrowScreen(book: dummyBook), // ✅ sudah benar
+    AccountScreen(username: widget.userName),
+  ];
+}
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
+          ),
         ],
       ),
     );
@@ -68,9 +85,18 @@ class _HomeScreenState extends State<HomeScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Hello,", style: TextStyle(fontSize: 20, color: Colors.black87)),
-                  Text(widget.userName,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)),
+                  const Text(
+                    "Hello,",
+                    style: TextStyle(fontSize: 20, color: Colors.black87),
+                  ),
+                  Text(
+                    widget.userName,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
                 ],
               ),
               const Icon(CupertinoIcons.bell, size: 28, color: Colors.green),
@@ -117,7 +143,14 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
-              Text("RECOMMEND", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1.2)),
+              Text(
+                "RECOMMEND",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  letterSpacing: 1.2,
+                ),
+              ),
               Text("See all >", style: TextStyle(color: Colors.green)),
             ],
           ),
@@ -129,7 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
             author: 'J.R.R. Tolkien',
             genre: 'Fantasi, Petualangan',
             year: '1937',
-            description: 'Petualangan Bilbo Baggins bersama kurcaci mencari harta naga Smaug.',
+            description:
+                'Petualangan Bilbo Baggins bersama kurcaci mencari harta naga Smaug.',
           ),
           const SizedBox(height: 16),
           _buildBookCard(
@@ -178,8 +212,15 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
         ],
       ),
     );
@@ -216,13 +257,31 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("$title -", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                Text(author, style: const TextStyle(fontSize: 14, color: Colors.black54)),
+                Text(
+                  "$title -",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  author,
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                ),
                 const SizedBox(height: 8),
-                Text("📖 Genre  : $genre", style: const TextStyle(fontSize: 13)),
-                Text("📅 Tahun Terbit : $year", style: const TextStyle(fontSize: 13)),
+                Text(
+                  "📖 Genre  : $genre",
+                  style: const TextStyle(fontSize: 13),
+                ),
+                Text(
+                  "📅 Tahun Terbit : $year",
+                  style: const TextStyle(fontSize: 13),
+                ),
                 const SizedBox(height: 8),
-                Text("📖 Deskripsi :\n$description", style: const TextStyle(fontSize: 13)),
+                Text(
+                  "📖 Deskripsi :\n$description",
+                  style: const TextStyle(fontSize: 13),
+                ),
               ],
             ),
           ),

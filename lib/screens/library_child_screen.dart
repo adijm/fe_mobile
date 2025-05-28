@@ -1,29 +1,39 @@
 import 'package:flutter/material.dart';
+import 'book_details_page.dart';
+import 'models/book_model.dart';
 
 class LibraryChildScreen extends StatelessWidget {
   const LibraryChildScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> books = [
-      {
-        'image': 'assets/dongeng_anak.png',
-        'category': 'Seri Binatang',
-        'title': 'Dongeng Anak Terlengkap',
-        'author': 'Kak Thifa',
-      },
-      {
-        'image': 'assets/belajar_membaca.png',
-        'category': 'Aktivitas anak pintar',
-        'title': 'Belajar Membaca',
-        'author': 'Amazing Kids',
-      },
-      {
-        'image': 'assets/berhitung.png',
-        'category': 'Untuk anak usia 2-5 tahun',
-        'title': 'Belajar Berhitung & mengenal angka',
-        'author': 'Zahra, S.Pd.',
-      },
+    final List<Book> books = [
+      Book(
+        id: 1,
+        image: 'assets/dongeng_anak.png',
+        category: 'Seri Binatang',
+        title: 'Dongeng Anak Terlengkap',
+        author: 'Kak Thifa',
+        description: 'Buku dongeng menarik dengan pesan moral untuk anak-anak.',
+      ),
+      Book(
+        id: 2,
+        image: 'assets/belajar_membaca.png',
+        category: 'Aktivitas anak pintar',
+        title: 'Belajar Membaca',
+        author: 'Amazing Kids',
+        description:
+            'Membantu anak-anak belajar membaca dengan cara menyenangkan.',
+      ),
+      Book(
+        id: 3,
+        image: 'assets/berhitung.png',
+        category: 'Untuk anak usia 2-5 tahun',
+        title: 'Belajar Berhitung & mengenal angka',
+        author: 'Zahra, S.Pd.',
+        description:
+            'Kenalkan angka dan hitungan dasar dengan ilustrasi menarik.',
+      ),
     ];
 
     return Scaffold(
@@ -32,7 +42,6 @@ class LibraryChildScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header "LIBRARY"
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Text(
@@ -45,7 +54,6 @@ class LibraryChildScreen extends StatelessWidget {
               ),
             ),
 
-            // Kategori Navigasi
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -61,7 +69,6 @@ class LibraryChildScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Daftar Buku
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -74,60 +81,68 @@ class LibraryChildScreen extends StatelessWidget {
                   separatorBuilder: (_, __) => const Divider(height: 24),
                   itemBuilder: (context, index) {
                     final book = books[index];
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Gambar Buku
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            book['image']!,
-                            width: 90,
-                            height: 120,
-                            fit: BoxFit.cover,
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                        builder: (context) => BookDetailsPage(
+                          book: book,
+                          currentUserId: 1, // GANTI dengan ID user yang login
+                        ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-
-                        // Info Buku
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                book['category']!,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                book['title']!,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                book['author']!,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
+                        );
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              book.image,
+                              width: 90,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-
-                        // Panah kanan
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: Colors.green,
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  book.category,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  book.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  book.author,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.green,
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -136,16 +151,13 @@ class LibraryChildScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      // Bottom navigation bar tetap tampil
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // index 1 = Library
+        currentIndex: 1,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          // Navigasi ke halaman lain jika perlu
-          Navigator.pop(context); // balik ke halaman utama kalau ditekan lagi
+          Navigator.pop(context);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -163,7 +175,6 @@ class LibraryChildScreen extends StatelessWidget {
     );
   }
 
-  // Widget untuk tab kategori
   Widget _buildCategoryTab(
     BuildContext context,
     String label, {
