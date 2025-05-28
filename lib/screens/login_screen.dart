@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
+import '../services/api_service.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -53,12 +55,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         const Text("Don’t have an account? "),
                         GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterScreen(),
-                            ),
-                          ),
+                          onTap:
+                              () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const RegisterScreen(),
+                                ),
+                              ),
                           child: const Text(
                             "Register",
                             style: TextStyle(
@@ -107,17 +110,42 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          final username = _usernameController.text.trim();
+
+                          onPressed: () async {
+                        final username = _usernameController.text.trim();
+                        final password = _passwordController.text.trim();
+
+                        if (username.isEmpty || password.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Username dan password tidak boleh kosong'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Coba login ke API
+                        final success = await ApiService.login(username, password);
+
+                        if (success) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => HomeScreen(
-                                userName: username.isNotEmpty ? username : 'User',
-                              ),
+                              builder: (_) => HomeScreen(userName: username),
                             ),
                           );
-                        },
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Login gagal. Periksa username/password.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+
+
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
