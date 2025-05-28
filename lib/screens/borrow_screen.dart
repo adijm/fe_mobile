@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models/book_model.dart';
+import '../services/api_service.dart';
 
 class BorrowScreen extends StatelessWidget {
   final Book book;
@@ -35,11 +36,7 @@ class BorrowBookCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
         ],
       ),
       padding: const EdgeInsets.all(16),
@@ -62,31 +59,48 @@ class BorrowBookCard extends StatelessWidget {
               children: [
                 const Text(
                   'Book Details',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                 ),
                 const SizedBox(height: 12),
                 _buildDetailRow('Title', book.title),
                 _buildDetailRow('Authors', book.author),
-                _buildDetailRow('Remaining', '12 available'), // optional: backend later
+                _buildDetailRow(
+                  'Remaining',
+                  '12 available',
+                ), // optional: backend later
                 const SizedBox(height: 8),
                 Row(
                   children: const [
-                    Icon(Icons.access_time_outlined, size: 16, color: Colors.grey),
+                    Icon(
+                      Icons.access_time_outlined,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
                     SizedBox(width: 6),
                     SizedBox(
                       width: 100,
-                      child: Text('Borrow Period', style: TextStyle(fontSize: 14)),
+                      child: Text(
+                        'Borrow Period',
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
-                    Text(': 24 Mei 2025', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    Text(
+                      ': 24 Mei 2025',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.info_outline, size: 16, color: Colors.grey),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(width: 6),
                     const SizedBox(
                       width: 100,
@@ -103,7 +117,10 @@ class BorrowBookCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     const Text(
                       'Pending Approval',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),

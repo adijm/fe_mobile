@@ -3,7 +3,6 @@ import 'register_screen.dart';
 import 'home_screen.dart';
 import '../services/api_service.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -110,41 +109,46 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
+                        onPressed: () async {
+                          final username = _usernameController.text.trim();
+                          final password = _passwordController.text.trim();
 
-                          onPressed: () async {
-                        final username = _usernameController.text.trim();
-                        final password = _passwordController.text.trim();
+                          if (username.isEmpty || password.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Username dan password tidak boleh kosong',
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
 
-                        if (username.isEmpty || password.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Username dan password tidak boleh kosong'),
-                              backgroundColor: Colors.red,
-                            ),
+                          // Coba login ke API
+                          final result = await ApiService.login(
+                            username: username,
+                            password: password,
                           );
-                          return;
-                        }
 
-                        // Coba login ke API
-                        final success = await ApiService.login(username, password);
-
-                        if (success) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => HomeScreen(userName: username),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Login gagal. Periksa username/password.'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
-
+                          if (result['success'] == true) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HomeScreen(userName: username),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Login gagal. Periksa username/password.',
+                                ),
+                                backgroundColor: Colors.pinkAccent,
+                              ),
+                            );
+                          }
+                        },
 
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
