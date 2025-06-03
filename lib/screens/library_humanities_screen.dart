@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
-import 'library_fiction_screen.dart';
-import 'library_humanities_screen.dart';
+import 'library_child_screen.dart';
 import 'library_education_screen.dart';
+import 'library_fiction_screen.dart';
 
-class LibraryChildScreen extends StatelessWidget {
-  const LibraryChildScreen({super.key});
+class LibraryHumanitiesScreen extends StatelessWidget {
+  const LibraryHumanitiesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String>> books = [
       {
-        'image': 'assets/dongeng_anak.png',
-        'category': 'Seri Binatang',
-        'title': 'Dongeng Anak Terlengkap',
-        'author': 'Kak Thifa',
+        'image': 'assets/social_contract.jpg',
+        'category': 'Filsafat Politik',
+        'title': 'The Social Contract',
+        'author': 'Jean-Jacques Rousseau',
       },
       {
-        'image': 'assets/belajar_membaca.png',
-        'category': 'Aktivitas anak pintar',
-        'title': 'Belajar Membaca',
-        'author': 'Amazing Kids',
+        'image': 'assets/orientalism_humanities.png',
+        'category': 'Representasi Budaya',
+        'title': 'Orientalism',
+        'author': 'Edward W Said',
       },
       {
-        'image': 'assets/berhitung.png',
-        'category': 'Untuk anak usia 2-5 tahun',
-        'title': 'Belajar Berhitung & mengenal angka',
-        'author': 'Zahra, S.Pd.',
+        'image': 'assets/the_republic_human.png',
+        'category': 'Noris Clasik',
+        'title': 'The Republic',
+        'author': 'Plato',
       },
       {
-        'image': 'assets/akhlak.jpg',
-        'category': 'pendidikan anak',
-        'title': 'Akhlak',
-        'author': 'Mutiara Sani',
+        'image': 'assets/sapiens.jpg',
+        'category': 'Sejarah dan peradaban',
+        'title': 'Sapiens',
+        'author': 'Yuval Noah Harari',
       },
     ];
 
@@ -53,14 +53,14 @@ class LibraryChildScreen extends StatelessWidget {
               ),
             ),
 
-            // Kategori Navigasi
+            // Tab Kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildCategoryTab(context, 'Child', isActive: true),
-                  _buildCategoryTab(context, 'Humanities'),
+                  _buildCategoryTab(context, 'Child'),
+                  _buildCategoryTab(context, 'Humanities', isActive: true),
                   _buildCategoryTab(context, 'Education'),
                   _buildCategoryTab(context, 'Fiction'),
                 ],
@@ -149,6 +149,8 @@ class LibraryChildScreen extends StatelessWidget {
           ],
         ),
       ),
+
+      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         type: BottomNavigationBarType.fixed,
@@ -167,23 +169,23 @@ class LibraryChildScreen extends StatelessWidget {
     );
   }
 
-  // Widget untuk tab kategori dengan navigasi ke file yang sesuai
   Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
     return InkWell(
       onTap: () {
         Widget targetScreen;
         switch (label) {
-          case 'Fiction':
-            targetScreen = const LibraryFictionScreen();
-            break;
-          case 'Humanities':
-            targetScreen = const LibraryHumanitiesScreen();
+          case 'Child':
+            targetScreen = const LibraryChildScreen();
             break;
           case 'Education':
             targetScreen = const LibraryEducationScreen();
             break;
+          case 'Fiction':
+            targetScreen = const LibraryFictionScreen();
+            break;
+          case 'Humanities':
           default:
-            targetScreen = const LibraryChildScreen(); // untuk "Child"
+            targetScreen = const LibraryHumanitiesScreen();
         }
 
         Navigator.push(
@@ -209,7 +211,7 @@ class LibraryChildScreen extends StatelessWidget {
   }
 }
 
-// Halaman detail buku sementara
+// Halaman Detail Buku
 class BookDetailScreen extends StatelessWidget {
   final Map<String, String> book;
   const BookDetailScreen({required this.book, super.key});

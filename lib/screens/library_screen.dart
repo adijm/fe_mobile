@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'library_child_screen.dart'; // pastikan file ini sudah dibuat
+import 'library_child_screen.dart';
+import 'library_humanities_screen.dart';
+import 'library_education_screen.dart';
+import 'library_fiction_screen.dart';
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
@@ -31,43 +34,25 @@ class LibraryScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const LibraryChildScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Child',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  _buildCategoryTab(
+                    context,
+                    label: 'Child',
+                    destination: const LibraryChildScreen(),
                   ),
-                  const Text(
-                    'Humanities',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  _buildCategoryTab(
+                    context,
+                    label: 'Humanities',
+                    destination: LibraryHumanitiesScreen(),
                   ),
-                  const Text(
-                    'Education',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  _buildCategoryTab(
+                    context,
+                    label: 'Education',
+                    destination: LibraryEducationScreen(),
                   ),
-                  const Text(
-                    'Fiction',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  _buildCategoryTab(
+                    context,
+                    label: 'Fiction',
+                    destination: LibraryFictionScreen(),
                   ),
                 ],
               ),
@@ -141,13 +126,13 @@ class LibraryScreen extends StatelessWidget {
                           ),
                           _buildBookCard(
                             "assets/informatika.jpg",
-                            "Inovatif dan Edukatif",
+                            "Informatika",
                             "Education",
                           ),
                           _buildBookCard(
                             "assets/the_hobbit.jpg",
-                            "Informatika",
-                            "Education",
+                            "The Hobbit",
+                            "Fiction",
                           ),
                         ],
                       ),
@@ -176,6 +161,7 @@ class LibraryScreen extends StatelessWidget {
                           _buildRecentCard("assets/sapiens.jpg"),
                           _buildRecentCard("assets/seni_teater.jpg"),
                           _buildRecentCard("assets/aku_bisa_berhitung.jpg"),
+                          _buildRecentCard("assets/perahu_kertas.jpg"),
                         ],
                       ),
                     ),
@@ -185,6 +171,23 @@ class LibraryScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Reusable category tab with navigation
+  Widget _buildCategoryTab(
+    BuildContext context, {
+    required String label,
+    required Widget destination,
+  }) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => destination));
+      },
+      child: Text(
+        label,
+        style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
       ),
     );
   }

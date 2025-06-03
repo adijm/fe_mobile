@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
-import 'library_fiction_screen.dart';
+import 'library_child_screen.dart';
 import 'library_humanities_screen.dart';
-import 'library_education_screen.dart';
+import 'library_fiction_screen.dart';
 
-class LibraryChildScreen extends StatelessWidget {
-  const LibraryChildScreen({super.key});
+class LibraryEducationScreen extends StatelessWidget {
+  const LibraryEducationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String>> books = [
       {
-        'image': 'assets/dongeng_anak.png',
-        'category': 'Seri Binatang',
-        'title': 'Dongeng Anak Terlengkap',
-        'author': 'Kak Thifa',
+        'image': 'assets/informatika.jpg',
+        'category': 'Teknologi Pendidikan',
+        'title': 'Informatika',
+        'author': 'Kemendikbud',
       },
       {
         'image': 'assets/belajar_membaca.png',
-        'category': 'Aktivitas anak pintar',
+        'category': 'Aktivitas Literasi Anak',
         'title': 'Belajar Membaca',
         'author': 'Amazing Kids',
       },
       {
         'image': 'assets/berhitung.png',
-        'category': 'Untuk anak usia 2-5 tahun',
+        'category': 'Numerasi Anak',
         'title': 'Belajar Berhitung & mengenal angka',
         'author': 'Zahra, S.Pd.',
       },
       {
-        'image': 'assets/akhlak.jpg',
-        'category': 'pendidikan anak',
-        'title': 'Akhlak',
-        'author': 'Mutiara Sani',
+        'image': 'assets/kebersamaan_education.png',
+        'category': 'Buku Tematik Terpadu',
+        'title': 'Kebersamaan',
+        'author': 'Kemendikbud',
       },
     ];
 
@@ -53,15 +53,15 @@ class LibraryChildScreen extends StatelessWidget {
               ),
             ),
 
-            // Kategori Navigasi
+            // Kategori Tab
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildCategoryTab(context, 'Child', isActive: true),
+                  _buildCategoryTab(context, 'Child'),
                   _buildCategoryTab(context, 'Humanities'),
-                  _buildCategoryTab(context, 'Education'),
+                  _buildCategoryTab(context, 'Education', isActive: true),
                   _buildCategoryTab(context, 'Fiction'),
                 ],
               ),
@@ -149,6 +149,8 @@ class LibraryChildScreen extends StatelessWidget {
           ],
         ),
       ),
+
+      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         type: BottomNavigationBarType.fixed,
@@ -167,23 +169,23 @@ class LibraryChildScreen extends StatelessWidget {
     );
   }
 
-  // Widget untuk tab kategori dengan navigasi ke file yang sesuai
   Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
     return InkWell(
       onTap: () {
         Widget targetScreen;
         switch (label) {
-          case 'Fiction':
-            targetScreen = const LibraryFictionScreen();
+          case 'Child':
+            targetScreen = const LibraryChildScreen();
             break;
           case 'Humanities':
             targetScreen = const LibraryHumanitiesScreen();
             break;
-          case 'Education':
-            targetScreen = const LibraryEducationScreen();
+          case 'Fiction':
+            targetScreen = const LibraryFictionScreen();
             break;
+          case 'Education':
           default:
-            targetScreen = const LibraryChildScreen(); // untuk "Child"
+            targetScreen = const LibraryEducationScreen();
         }
 
         Navigator.push(
@@ -209,7 +211,7 @@ class LibraryChildScreen extends StatelessWidget {
   }
 }
 
-// Halaman detail buku sementara
+// Halaman Detail Buku
 class BookDetailScreen extends StatelessWidget {
   final Map<String, String> book;
   const BookDetailScreen({required this.book, super.key});

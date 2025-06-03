@@ -45,6 +45,11 @@ flutter:
     - assets/berhitung.png
     - assets/dongeng_anak.png
     - assets/belajar_membaca.png
+    - assets/kebersamaan_education.png
+    - assets/laskar_pelangi.png
+    - assets/orientalism_humanities.png
+    - assets/pendidikan_pancasila.png
+    - assets/the_republic_human.png
   fonts:
     - family: DancingScript
       fonts:

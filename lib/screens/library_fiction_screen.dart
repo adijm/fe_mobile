@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
-import 'library_fiction_screen.dart';
+import 'library_child_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_education_screen.dart';
 
-class LibraryChildScreen extends StatelessWidget {
-  const LibraryChildScreen({super.key});
+class LibraryFictionScreen extends StatelessWidget {
+  const LibraryFictionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String>> books = [
       {
-        'image': 'assets/dongeng_anak.png',
-        'category': 'Seri Binatang',
-        'title': 'Dongeng Anak Terlengkap',
-        'author': 'Kak Thifa',
+        'image': 'assets/laskar_pelangi.png',
+        'category': 'Fiksi Perjalanan Anak',
+        'title': 'Laskar Pelangi',
+        'author': 'Andrea Hirata',
       },
       {
-        'image': 'assets/belajar_membaca.png',
-        'category': 'Aktivitas anak pintar',
-        'title': 'Belajar Membaca',
-        'author': 'Amazing Kids',
+        'image': 'assets/the_hobbit.jpg',
+        'category': 'Fantasi Dunia Tengah',
+        'title': 'The Hobbit',
+        'author': 'J.R.R. Tolkien',
       },
       {
-        'image': 'assets/berhitung.png',
-        'category': 'Untuk anak usia 2-5 tahun',
-        'title': 'Belajar Berhitung & mengenal angka',
-        'author': 'Zahra, S.Pd.',
+        'image': 'assets/rahasia_pelangi.jpg',
+        'category': 'Fiksi anak',
+        'title': 'Rahasia Pelangi',
+        'author': 'Riawany Elita',
       },
       {
-        'image': 'assets/akhlak.jpg',
-        'category': 'pendidikan anak',
-        'title': 'Akhlak',
-        'author': 'Mutiara Sani',
+        'image': 'assets/perahu_kertas.jpg',
+        'category': 'Fiksi dewasa',
+        'title': 'Perahu Kertas',
+        'author': 'Amelia',
       },
     ];
 
@@ -53,16 +53,16 @@ class LibraryChildScreen extends StatelessWidget {
               ),
             ),
 
-            // Kategori Navigasi
+            // Kategori Tab Navigasi
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildCategoryTab(context, 'Child', isActive: true),
+                  _buildCategoryTab(context, 'Child'),
                   _buildCategoryTab(context, 'Humanities'),
                   _buildCategoryTab(context, 'Education'),
-                  _buildCategoryTab(context, 'Fiction'),
+                  _buildCategoryTab(context, 'Fiction', isActive: true),
                 ],
               ),
             ),
@@ -134,11 +134,8 @@ class LibraryChildScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: Colors.green,
-                          ),
+                          const Icon(Icons.arrow_forward_ios,
+                              size: 16, color: Colors.green),
                         ],
                       ),
                     );
@@ -149,6 +146,7 @@ class LibraryChildScreen extends StatelessWidget {
           ],
         ),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         type: BottomNavigationBarType.fixed,
@@ -159,22 +157,23 @@ class LibraryChildScreen extends StatelessWidget {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.library_books), label: 'Library'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle), label: 'Account'),
         ],
       ),
     );
   }
 
-  // Widget untuk tab kategori dengan navigasi ke file yang sesuai
   Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
     return InkWell(
       onTap: () {
         Widget targetScreen;
         switch (label) {
-          case 'Fiction':
-            targetScreen = const LibraryFictionScreen();
+          case 'Child':
+            targetScreen = const LibraryChildScreen();
             break;
           case 'Humanities':
             targetScreen = const LibraryHumanitiesScreen();
@@ -182,8 +181,9 @@ class LibraryChildScreen extends StatelessWidget {
           case 'Education':
             targetScreen = const LibraryEducationScreen();
             break;
+          case 'Fiction':
           default:
-            targetScreen = const LibraryChildScreen(); // untuk "Child"
+            targetScreen = const LibraryFictionScreen();
         }
 
         Navigator.push(

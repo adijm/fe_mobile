@@ -8,7 +8,7 @@ import 'account_screen.dart';
 class HomeScreen extends StatefulWidget {
   final String userName;
 
-  const HomeScreen({Key? key, required this.userName}) : super(key: key);
+  const HomeScreen({super.key, required this.userName}); // ✅ gunakan super.key
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -16,30 +16,29 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
   late List<Widget> _pages;
 
-@override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  // Dummy Book untuk testing
-  Book dummyBook = Book(
-    id: 1,
-    image: 'assets/the_hobbit.jpg',
-    category: 'Fantasi',
-    title: 'The Hobbit',
-    author: 'J.R.R. Tolkien',
-    description: 'Petualangan Bilbo Baggins mencari harta naga Smaug.',
-  );
+    // Dummy Book untuk testing
+    Book dummyBook = Book(
+      id: 1,
+      image: 'assets/the_hobbit.jpg',
+      category: 'Fantasi',
+      title: 'The Hobbit',
+      author: 'J.R.R. Tolkien',
+      description: 'Petualangan Bilbo Baggins mencari harta naga Smaug.',
+    );
 
-  _pages = [
-    _buildHomeContent(),
-    const LibraryScreen(),
-    BorrowScreen(book: dummyBook), // ✅ sudah benar
-    AccountScreen(username: widget.userName),
-  ];
-}
+    _pages = [
+      _buildHomeContent(),
+      const LibraryScreen(),
+      BorrowScreen(book: dummyBook),
+      AccountScreen(username: widget.userName),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,15 +57,9 @@ void initState() {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_books),
-            label: 'Library',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
         ],
       ),
     );
@@ -133,7 +126,7 @@ void initState() {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildStatCard("📚", "0 Buku", "Sedang dipinjam"),
-              _buildStatCard("✅", "0 Buku", "Sudah dikembalikan"),
+              _buildStatCardIcon(Icons.check_circle, Colors.blue, "0 Buku", "Sudah dikembalikan"),
               _buildStatCard("📖", "0", "Total pinjaman"),
             ],
           ),
@@ -156,14 +149,14 @@ void initState() {
           ),
           const SizedBox(height: 16),
 
+          // Book Cards
           _buildBookCard(
             imagePath: 'assets/the_hobbit.jpg',
             title: 'The Hobbit',
             author: 'J.R.R. Tolkien',
             genre: 'Fantasi, Petualangan',
             year: '1937',
-            description:
-                'Petualangan Bilbo Baggins bersama kurcaci mencari harta naga Smaug.',
+            description: 'Petualangan Bilbo Baggins bersama kurcaci mencari harta naga Smaug.',
           ),
           const SizedBox(height: 16),
           _buildBookCard(
@@ -226,6 +219,35 @@ void initState() {
     );
   }
 
+  Widget _buildStatCardIcon(IconData icon, Color color, String value, String label) {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F7FA),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(1, 2)),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 28, color: color),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
   static Widget _buildBookCard({
     required String imagePath,
     required String title,
@@ -269,19 +291,10 @@ void initState() {
                   style: const TextStyle(fontSize: 14, color: Colors.black54),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  "📖 Genre  : $genre",
-                  style: const TextStyle(fontSize: 13),
-                ),
-                Text(
-                  "📅 Tahun Terbit : $year",
-                  style: const TextStyle(fontSize: 13),
-                ),
+                Text("📖 Genre  : $genre", style: const TextStyle(fontSize: 13)),
+                Text("📅 Tahun Terbit : $year", style: const TextStyle(fontSize: 13)),
                 const SizedBox(height: 8),
-                Text(
-                  "📖 Deskripsi :\n$description",
-                  style: const TextStyle(fontSize: 13),
-                ),
+                Text("📖 Deskripsi :\n$description", style: const TextStyle(fontSize: 13)),
               ],
             ),
           ),
