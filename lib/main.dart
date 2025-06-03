@@ -69,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     // Tampilkan splash selama 6 detik sebelum navigasi ke landing screen
-    Future.delayed(const Duration(seconds: 6), () {
+    Future.delayed(const Duration(seconds: 5), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LandingScreen()),

@@ -4,11 +4,11 @@ import 'package:forumapp/screens/models/book_model.dart';
 import 'borrow_screen.dart';
 import 'library_screen.dart';
 import 'account_screen.dart';
+import 'book_details_page.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key, required this.userName});
   final String userName;
-
-  const HomeScreen({super.key, required this.userName}); // ✅ gunakan super.key
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    // Dummy Book untuk testing
     Book dummyBook = Book(
       id: 1,
       image: 'assets/the_hobbit.jpg',
@@ -71,25 +70,15 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Greeting and Notification Icon
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Hello,",
-                    style: TextStyle(fontSize: 20, color: Colors.black87),
-                  ),
-                  Text(
-                    widget.userName,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
+                  const Text("Hello,", style: TextStyle(fontSize: 20, color: Colors.black87)),
+                  Text(widget.userName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ],
               ),
               const Icon(CupertinoIcons.bell, size: 28, color: Colors.green),
@@ -121,30 +110,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 20),
 
-          // Book Summary Cards
+          // Stat Cards with GestureDetector
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatCard("📚", "0 Buku", "Sedang dipinjam"),
-              _buildStatCardIcon(Icons.check_circle, Colors.blue, "0 Buku", "Sudah dikembalikan"),
-              _buildStatCard("📖", "0", "Total pinjaman"),
+              GestureDetector(
+                onTap: () => setState(() => _selectedIndex = 2),
+                child: _buildStatCard("📚", "0 Buku", "Sedang dipinjam"),
+              ),
+              GestureDetector(
+                onTap: () => setState(() => _selectedIndex = 2),
+                child: _buildStatCardIcon(Icons.check_circle, Colors.blue, "0 Buku", "Sudah dikembalikan"),
+              ),
+              GestureDetector(
+                onTap: () => setState(() => _selectedIndex = 2),
+                child: _buildStatCard("📖", "0", "Total pinjaman"),
+              ),
             ],
           ),
           const SizedBox(height: 30),
 
-          // Recommend Section
+          // Recommend Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
-                "RECOMMEND",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  letterSpacing: 1.2,
-                ),
+            children: [
+              const Text("RECOMMEND", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1.2)),
+              GestureDetector(
+                onTap: () => setState(() => _selectedIndex = 1),
+                child: const Text("See all >", style: TextStyle(color: Colors.green)),
               ),
-              Text("See all >", style: TextStyle(color: Colors.green)),
             ],
           ),
           const SizedBox(height: 16),
@@ -205,21 +199,14 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12),
-          ),
+          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
         ],
       ),
     );
   }
 
-  Widget _buildStatCardIcon(IconData icon, Color color, String value, String label) {
+  static Widget _buildStatCardIcon(IconData icon, Color color, String value, String label) {
     return Container(
       width: 100,
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -232,23 +219,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Column(
         children: [
-          Icon(icon, size: 28, color: color),
+          Icon(icon, size: 24, color: color),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12),
-          ),
+          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
         ],
       ),
     );
   }
 
-  static Widget _buildBookCard({
+  Widget _buildBookCard({
     required String imagePath,
     required String title,
     required String author,
@@ -256,49 +236,57 @@ class _HomeScreenState extends State<HomeScreen> {
     required String year,
     required String description,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              imagePath,
-              width: 70,
-              height: 100,
-              fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BookDetailsPage(
+              imagePath: imagePath,
+              title: title,
+              author: author,
+              genre: genre,
+              year: year,
+              description: description,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "$title -",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  author,
-                  style: const TextStyle(fontSize: 14, color: Colors.black54),
-                ),
-                const SizedBox(height: 8),
-                Text("📖 Genre  : $genre", style: const TextStyle(fontSize: 13)),
-                Text("📅 Tahun Terbit : $year", style: const TextStyle(fontSize: 13)),
-                const SizedBox(height: 8),
-                Text("📖 Deskripsi :\n$description", style: const TextStyle(fontSize: 13)),
-              ],
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey[300]!),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                imagePath,
+                width: 70,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("$title -", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(author, style: const TextStyle(fontSize: 14, color: Colors.black54)),
+                  const SizedBox(height: 8),
+                  Text("📖 Genre  : $genre", style: const TextStyle(fontSize: 13)),
+                  Text("📅 Tahun Terbit : $year", style: const TextStyle(fontSize: 13)),
+                  const SizedBox(height: 8),
+                  Text("📖 Deskripsi :\n$description", style: const TextStyle(fontSize: 13)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

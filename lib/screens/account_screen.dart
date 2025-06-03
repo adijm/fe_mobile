@@ -13,8 +13,6 @@ class AccountScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 24),
-
-          // Judul "Account"
           const Text(
             'Account',
             style: TextStyle(
@@ -23,18 +21,12 @@ class AccountScreen extends StatelessWidget {
               color: Colors.black87,
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // Avatar
           const CircleAvatar(
             radius: 40,
             backgroundImage: AssetImage('assets/account_profile.png'),
           ),
-
           const SizedBox(height: 8),
-
-          // Username
           Text(
             '@$username',
             style: const TextStyle(
@@ -43,7 +35,6 @@ class AccountScreen extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-
           const SizedBox(height: 24),
 
           // Statistik
@@ -52,16 +43,40 @@ class AccountScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildStatCard(Icons.book, '2 Buku', 'Dipinjam'),
-                _buildStatCard(Icons.check_circle, '1 Buku', 'Dikembalikan'),
-                _buildStatCard(Icons.money_off, 'Rp 0', 'Denda'),
+                _buildStatCard(
+                  context,
+                  icon: Icons.book,
+                  count: '2 Buku',
+                  label: 'Dipinjam',
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Buku Dipinjam')));
+                  },
+                ),
+                _buildStatCard(
+                  context,
+                  icon: Icons.check_circle,
+                  count: '1 Buku',
+                  label: 'Dikembalikan',
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Buku Dikembalikan')));
+                  },
+                ),
+                _buildStatCard(
+                  context,
+                  icon: Icons.money_off,
+                  count: 'Rp 0',
+                  label: 'Denda',
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Denda')));
+                  },
+                ),
               ],
             ),
           ),
 
           const SizedBox(height: 24),
 
-          // Menu
+          // Menu list
           Expanded(
             child: Container(
               width: double.infinity,
@@ -71,15 +86,87 @@ class AccountScreen extends StatelessWidget {
               ),
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                children: const [
-                  _AccountOption(icon: Icons.bookmark, label: 'Saved Books'),
+                children: [
+                  _AccountOption(
+                    icon: Icons.bookmark,
+                    label: 'Saved Books',
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Saved Books')));
+                    },
+                  ),
                   _AccountOption(
                     icon: Icons.settings,
                     label: 'Account Setting',
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Account Settings')));
+                    },
                   ),
-                  _AccountOption(icon: Icons.history, label: 'History'),
-                  _AccountOption(icon: Icons.help, label: 'Help and Support'),
-                  _AccountOption(icon: Icons.logout, label: 'Log Out'),
+                  _AccountOption(
+                    icon: Icons.history,
+                    label: 'History',
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'History')));
+                    },
+                  ),
+                  _AccountOption(
+                    icon: Icons.help,
+                    label: 'Help and Support',
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Help & Support')));
+                    },
+                  ),
+                  _AccountOption(
+                    icon: Icons.logout,
+                    label: 'Log Out',
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.logout, size: 48, color: Colors.red),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "Are you sure you want to\nLog Out?",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                ),
+                                const SizedBox(height: 24),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // close dialog
+                                        Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          '/login',
+                                          (route) => false,
+                                        );
+                                      },
+                                      child: const Text("Yes, Log Out", style: TextStyle(color: Colors.white)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -89,24 +176,30 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(IconData icon, String count, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: Colors.blue, size: 28),
-          const SizedBox(height: 4),
-          Text(
-            count,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          Text(label, style: const TextStyle(fontSize: 12)),
-        ],
+  Widget _buildStatCard(
+    BuildContext context, {
+    required IconData icon,
+    required String count,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.blue, size: 28),
+            const SizedBox(height: 4),
+            Text(count, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(label, style: const TextStyle(fontSize: 12)),
+          ],
+        ),
       ),
     );
   }
@@ -115,22 +208,32 @@ class AccountScreen extends StatelessWidget {
 class _AccountOption extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback onTap;
 
-  const _AccountOption({required this.icon, required this.label});
+  const _AccountOption({required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: Colors.black54),
       title: Text(label, style: const TextStyle(color: Colors.black87)),
-      trailing: const Icon(
-        Icons.arrow_forward_ios,
-        size: 16,
-        color: Colors.black38,
-      ),
-      onTap: () {
-        // Tambah logika jika diperlukan
-      },
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black38),
+      onTap: onTap,
+    );
+  }
+}
+
+// DummyPage buat testing navigasi
+class DummyPage extends StatelessWidget {
+  final String title;
+
+  const DummyPage({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(child: Text('Ini halaman $title')),
     );
   }
 }

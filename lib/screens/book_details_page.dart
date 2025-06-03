@@ -1,92 +1,134 @@
 import 'package:flutter/material.dart';
 import 'models/book_model.dart';
-import '../services/api_service.dart';  // import ApiService
 import 'borrow_screen.dart';
 
 class BookDetailsPage extends StatelessWidget {
-  final Book book;
-  final int currentUserId;   // harus tahu siapa user yang login
+  final String imagePath;
+  final String title;
+  final String author;
+  final String genre;
+  final String year;
+  final String description;
 
   const BookDetailsPage({
-    super.key,
-    required this.book,
-    required this.currentUserId,  // dapatkan userId dari login
-  });
-
-  void _confirmBorrow(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Pinjam Buku"),
-        content: const Text("Apakah kamu yakin ingin meminjam buku ini?"),
-        actions: [
-          TextButton(
-            child: const Text("Batal"),
-            onPressed: () => Navigator.pop(context),
-          ),
-          ElevatedButton(
-            child: const Text("Ya, Pinjam"),
-            onPressed: () {
-              Navigator.pop(context);
-              _borrowBook(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _borrowBook(BuildContext context) async {
-    // Contoh tenggat waktu (bisa diganti dengan datepicker)
-    final tenggatWaktu = DateTime.now().add(const Duration(days: 7)).toIso8601String().split('T').first;
-
-    final result = await ApiService.borrowBook(
-      bukuId: book.id,
-      userId: currentUserId,
-      tenggatWaktu: tenggatWaktu,
-    );
-
-    if (result['success']) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Berhasil meminjam buku!")),
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BorrowScreen(book: book),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal meminjam buku: ${result['error']}")),
-      );
-    }
-  }
+    Key? key,
+    required this.imagePath,
+    required this.title,
+    required this.author,
+    required this.genre,
+    required this.year,
+    required this.description,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Buat objek Book dari detail yang ada
+    final book = Book(
+      id: 0, // Bisa disesuaikan kalau kamu punya ID unik
+      image: imagePath,
+      category: genre,
+      title: title,
+      author: author,
+      description: description,
+    );
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Detail Buku")),
-      body: Padding(
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: Colors.green,
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(book.image, height: 180),
-            const SizedBox(height: 16),
-            Text(book.title,
-                style: const TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold)),
+            // Cover image
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  imagePath,
+                  width: 200,
+                  height: 280,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Title
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text("Oleh ${book.author}",
-                style: const TextStyle(color: Colors.grey)),
-            const SizedBox(height: 16),
-            Text(book.description),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: () => _confirmBorrow(context),
-              child: const Text("Borrow"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 48),
+
+            // Author
+            Text(
+              'Author: $author',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Genre
+            Text(
+              'Genre: $genre',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Year
+            Text(
+              'Year Published: $year',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Description
+            const Text(
+              'Description:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              description,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 32),
+
+            // Tombol Borrow
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => BorrowScreen(book: book)),
+                  );
+                },
+                icon: const Icon(Icons.book_online),
+                label: const Text("Borrow"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
               ),
             ),
           ],
