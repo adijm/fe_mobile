@@ -16,12 +16,17 @@ class ApiService {
 
     final response = await http.post(
       url,
-      body: {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        // <--- ubah ini jadi jsonEncode
         'name': name,
         'username': username,
         'email': email,
         'password': password,
-      },
+      }),
     );
 
     if (response.statusCode == 200) {
