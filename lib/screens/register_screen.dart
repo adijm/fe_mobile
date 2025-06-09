@@ -57,13 +57,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         const Text("Already have an account? "),
                         GestureDetector(
-                          onTap:
-                              () => Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LoginScreen(),
-                                ),
-                              ),
+                          onTap: () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
+                          ),
                           child: const Text(
                             "Login",
                             style: TextStyle(
@@ -133,10 +132,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (username.isEmpty || password.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text(
-                                  'Username dan password tidak boleh kosong',
-                                ),
-                                backgroundColor: Colors.blue,
+                                content: Text('Username dan password tidak boleh kosong'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
+                          if (password.length < 6) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Password minimal 6 karakter'),
+                                backgroundColor: Colors.red,
                               ),
                             );
                             return;
@@ -152,9 +159,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (success) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text(
-                                  'Registrasi berhasil! Silakan login.',
-                                ),
+                                content: Text('Registrasi berhasil! Silakan login.'),
+                                backgroundColor: Colors.green,
                               ),
                             );
                             Navigator.pushReplacement(
@@ -167,21 +173,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                  'Registrasi gagal. Username mungkin sudah terdaftar.',
+                                  'Registrasi gagal. Username atau email mungkin sudah digunakan.',
                                 ),
-                                backgroundColor: Colors.blue,
+                                backgroundColor: Colors.red,
                               ),
                             );
                           }
                         },
-
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            33,
-                            150,
-                            243,
-                          ),
+                          backgroundColor: const Color.fromARGB(255, 33, 150, 243),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),

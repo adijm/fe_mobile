@@ -1,21 +1,111 @@
 import 'package:flutter/material.dart';
+import 'book_details_page.dart';
 import 'library_child_screen.dart';
-import 'library_humanities_screen.dart';
 import 'library_education_screen.dart';
 import 'library_fiction_screen.dart';
+import 'library_humanities_screen.dart';
 
-class LibraryScreen extends StatelessWidget {
+class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
 
   @override
+  State<LibraryScreen> createState() => _LibraryScreenState();
+}
+
+class _LibraryScreenState extends State<LibraryScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  final List<Map<String, String>> allBooks = [
+    {
+      "imagePath": "assets/akhlak.jpg",
+      "title": "Aku Belajar Akhlak",
+      "author": "Nurul Hidayah",
+      "genre": "Child",
+      "year": "2020",
+      "description": "Buku ini mengenalkan akhlak mulia pada anak-anak melalui cerita dan ilustrasi menarik.",
+    },
+    {
+      "imagePath": "assets/social_contract.jpg",
+      "title": "The Social Contract",
+      "author": "Jean-Jacques Rousseau",
+      "genre": "Humanities",
+      "year": "1762",
+      "description": "Karya filsafat politik klasik yang membahas perjanjian sosial dan dasar-dasar kekuasaan yang sah.",
+    },
+    {
+      "imagePath": "assets/informatika.jpg",
+      "title": "Informatika",
+      "author": "Tim Kemdikbud",
+      "genre": "Education",
+      "year": "2021",
+      "description": "Buku pelajaran resmi untuk mengenalkan dasar-dasar informatika dan pemrograman.",
+    },
+    {
+      "imagePath": "assets/the_hobbit.jpg",
+      "title": "The Hobbit",
+      "author": "J.R.R. Tolkien",
+      "genre": "Fiction",
+      "year": "1937",
+      "description": "Petualangan Bilbo Baggins dalam dunia Middle-earth yang penuh keajaiban dan bahaya.",
+    },
+  ];
+
+  final List<Map<String, String>> recentlyViewed = [
+    {
+      "imagePath": "assets/sapiens.jpg",
+      "title": "Sapiens",
+      "author": "Yuval Noah Harari",
+      "genre": "Humanities",
+      "year": "2011",
+      "description": "Buku tentang sejarah manusia dari zaman purba hingga modern.",
+    },
+    {
+      "imagePath": "assets/seni_teater.jpg",
+      "title": "Seni Teater",
+      "author": "Rendra",
+      "genre": "Education",
+      "year": "2005",
+      "description": "Pengantar seni teater dari perspektif budaya Indonesia.",
+    },
+    {
+      "imagePath": "assets/aku_bisa_berhitung.jpg",
+      "title": "Aku Bisa Berhitung",
+      "author": "Dwi Rahayu",
+      "genre": "Child",
+      "year": "2018",
+      "description": "Belajar berhitung untuk anak usia dini dengan metode menyenangkan.",
+    },
+    {
+      "imagePath": "assets/perahu_kertas.jpg",
+      "title": "Perahu Kertas",
+      "author": "Dewi Lestari",
+      "genre": "Fiction",
+      "year": "2009",
+      "description": "Kisah cinta dan pencarian jati diri remaja Indonesia.",
+    },
+  ];
+
+  List<Map<String, String>> _filterBooks(List<Map<String, String>> books) {
+    return books.where((book) {
+      final lowerQuery = _searchQuery.toLowerCase();
+      return book['title']!.toLowerCase().contains(lowerQuery) ||
+          book['author']!.toLowerCase().contains(lowerQuery) ||
+          book['genre']!.toLowerCase().contains(lowerQuery);
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final filteredNewCollection = _filterBooks(allBooks);
+    final filteredRecentBooks = _filterBooks(recentlyViewed);
+
     return Scaffold(
       backgroundColor: const Color(0xFFB4D9F8),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Text(
@@ -27,38 +117,18 @@ class LibraryScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Category Tabs
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildCategoryTab(
-                    context,
-                    label: 'Child',
-                    destination: const LibraryChildScreen(),
-                  ),
-                  _buildCategoryTab(
-                    context,
-                    label: 'Humanities',
-                    destination: LibraryHumanitiesScreen(),
-                  ),
-                  _buildCategoryTab(
-                    context,
-                    label: 'Education',
-                    destination: LibraryEducationScreen(),
-                  ),
-                  _buildCategoryTab(
-                    context,
-                    label: 'Fiction',
-                    destination: LibraryFictionScreen(),
-                  ),
+                  _buildCategoryTab(context, label: 'Child', destination: const LibraryChildScreen()),
+                  _buildCategoryTab(context, label: 'Humanities', destination: LibraryHumanitiesScreen()),
+                  _buildCategoryTab(context, label: 'Education', destination: LibraryEducationScreen()),
+                  _buildCategoryTab(context, label: 'Fiction', destination: LibraryFictionScreen()),
                 ],
               ),
             ),
-
-            // Search Bar
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
@@ -67,20 +137,21 @@ class LibraryScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                  },
                   decoration: InputDecoration(
                     hintText: 'Search for books',
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 14,
-                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                     border: InputBorder.none,
                     suffixIcon: Icon(Icons.search, color: Colors.grey[600]),
                   ),
                 ),
               ),
             ),
-
-            // Book List
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -90,81 +161,22 @@ class LibraryScreen extends StatelessWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    // Header + More icon
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
-                        Text(
-                          'New Collection',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
+                        Text('New Collection', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                         Icon(Icons.more_vert),
                       ],
                     ),
                     const SizedBox(height: 12),
-
-                    // Horizontal list of book cards
-                    SizedBox(
-                      height: 240,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        children: [
-                          _buildBookCard(
-                            "assets/akhlak.jpg",
-                            "Aku Belajar Akhlak",
-                            "Child",
-                          ),
-                          _buildBookCard(
-                            "assets/social_contract.jpg",
-                            "The Social Contract",
-                            "Humanities",
-                          ),
-                          _buildBookCard(
-                            "assets/informatika.jpg",
-                            "Informatika",
-                            "Education",
-                          ),
-                          _buildBookCard(
-                            "assets/the_hobbit.jpg",
-                            "The Hobbit",
-                            "Fiction",
-                          ),
-                        ],
-                      ),
-                    ),
-
+                    _buildBookList(filteredNewCollection, isSimple: false),
                     const SizedBox(height: 24),
-
-                    // Recently Viewed
                     const Text(
                       'Recently Viewed',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     const SizedBox(height: 12),
-
-                    // Horizontal scroll for recent books
-                    SizedBox(
-                      height: 170,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        children: [
-                          _buildRecentCard("assets/sapiens.jpg"),
-                          _buildRecentCard("assets/seni_teater.jpg"),
-                          _buildRecentCard("assets/aku_bisa_berhitung.jpg"),
-                          _buildRecentCard("assets/perahu_kertas.jpg"),
-                        ],
-                      ),
-                    ),
+                    _buildBookList(filteredRecentBooks, isSimple: true),
                   ],
                 ),
               ),
@@ -175,12 +187,7 @@ class LibraryScreen extends StatelessWidget {
     );
   }
 
-  // Reusable category tab with navigation
-  Widget _buildCategoryTab(
-    BuildContext context, {
-    required String label,
-    required Widget destination,
-  }) {
+  Widget _buildCategoryTab(BuildContext context, {required String label, required Widget destination}) {
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (_) => destination));
@@ -192,74 +199,83 @@ class LibraryScreen extends StatelessWidget {
     );
   }
 
-  // Book card for New Collection
-  static Widget _buildBookCard(
-    String imagePath,
-    String title,
-    String category,
-  ) {
-    return Container(
-      width: 150,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 247, 244, 245),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-              image: DecorationImage(
-                image: AssetImage(imagePath),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  category,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+  Widget _buildBookList(List<Map<String, String>> books, {required bool isSimple}) {
+    return SizedBox(
+      height: isSimple ? 200 : 240,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: books.length,
+        itemBuilder: (context, index) {
+          final book = books[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BookDetailsPage(
+                    imagePath: book['imagePath']!,
+                    title: book['title']!,
+                    author: book['author']!,
+                    genre: book['genre']!,
+                    year: book['year']!,
+                    description: book['description']!,
                   ),
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  "Remaining: 12 copies",
-                  style: TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-              ],
+              );
+            },
+            child: Container(
+              width: 150,
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                color: isSimple ? Colors.grey[300] : const Color.fromARGB(255, 247, 244, 245),
+                borderRadius: BorderRadius.circular(20),
+                image: isSimple
+                    ? DecorationImage(
+                        image: AssetImage(book['imagePath']!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+              child: !isSimple
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 120,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                            image: DecorationImage(
+                              image: AssetImage(book['imagePath']!),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(book['genre']!, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                              Text(
+                                book['title']!,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                "Remaining: 12 copies",
+                                style: TextStyle(fontSize: 11, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  : null,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Book card for Recently Viewed
-  static Widget _buildRecentCard(String imagePath) {
-    return Container(
-      width: 150,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(16),
-        image: DecorationImage(image: AssetImage(imagePath), fit: BoxFit.cover),
+          );
+        },
       ),
     );
   }

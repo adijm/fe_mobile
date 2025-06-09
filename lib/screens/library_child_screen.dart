@@ -161,6 +161,7 @@ class LibraryChildScreen extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
+          BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), label: 'Return'),
           BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
         ],
       ),

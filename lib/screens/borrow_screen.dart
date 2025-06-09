@@ -29,7 +29,6 @@ class BorrowScreen extends StatelessWidget {
                 children: [
                   BorrowBookCard(book: book!, status: status),
                   const SizedBox(height: 32),
-                  const NotificationSection()
                 ],
               ),
             ),
@@ -190,81 +189,3 @@ class BorrowBookCard extends StatelessWidget {
   }
 }
 
-class NotificationSection extends StatelessWidget {
-  const NotificationSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Hari ini', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        const SizedBox(height: 12),
-        _buildNotification(
-          icon: Icons.check_circle,
-          color: Colors.green,
-          title: 'Pengembalian Berhasil',
-          message: 'Buku “Rahasia Pelangi” telah dikembalikan. Terima kasih telah menjaga buku dengan baik!',
-          time: '04 Juni 2025, 09:31 AM',
-        ),
-        const Divider(height: 32),
-        const Text('Minggu ini', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        const SizedBox(height: 12),
-        _buildNotification(
-          icon: Icons.menu_book,
-          color: Colors.blue,
-          title: 'Peminjaman Disetujui',
-          message:
-              'Permintaanmu untuk meminjam buku “Rahasia Pelangi” telah disetujui oleh admin. Silahkan ambil buku di perpustakaan dalam 3 hari ke depan',
-          time: '26 Mei 2025, 08:07 AM',
-        ),
-        const SizedBox(height: 12),
-        _buildNotification(
-          icon: Icons.send,
-          color: Colors.lightBlue,
-          title: 'Permintaan Peminjaman dikirim',
-          message:
-              'kamu telah mengajukan permintaan peminjaman buku “Rahasia Pelangi”. Mohon tunggu persetujuan dari admin ya!',
-          time: '24 Mei 2025, 04:30 PM',
-        ),
-        const SizedBox(height: 12),
-        _buildNotification(
-          icon: Icons.person,
-          color: Colors.green,
-          title: 'Pendaftaran Berhasil',
-          message:
-              'Selamat datang! Sekarang kamu sudah bisa menjelajahi koleksi buku dan melakukan peminjaman!',
-          time: '24 Mei 2025, 10:31 AM',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNotification({
-    required IconData icon,
-    required Color color,
-    required String title,
-    required String message,
-    required String time,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 28, color: color),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-              const SizedBox(height: 4),
-              Text(message, style: const TextStyle(fontSize: 13)),
-              const SizedBox(height: 4),
-              Text(time, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}

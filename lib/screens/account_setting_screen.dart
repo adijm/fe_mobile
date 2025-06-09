@@ -8,100 +8,122 @@ class AccountSettingScreen extends StatefulWidget {
 }
 
 class _AccountSettingScreenState extends State<AccountSettingScreen> {
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFCCE7FF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFCCE7FF),
+        title: const Text('Account Setting'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFB3D7F3),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Account Setting',
-          style: TextStyle(color: Colors.black87),
-        ),
-        centerTitle: true,
       ),
-      body: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Column(
           children: [
-            const SizedBox(height: 10),
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: Colors.grey[200],
-              backgroundImage: const AssetImage('assets/images/account_profile.png'), // Ganti sesuai asetmu
+            const CircleAvatar(
+              radius: 45,
+              backgroundColor: Colors.green,
+              child: CircleAvatar(
+                radius: 42,
+                backgroundImage: AssetImage('account_profile.png'), // Ganti sesuai asset Anda
+              ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              '@tania19',
-              style: TextStyle(fontSize: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text(
+                  '@tania19',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(width: 5),
+                Icon(Icons.edit, size: 16, color: Colors.grey),
+              ],
             ),
-            const SizedBox(height: 24),
-            buildTextFieldLabel('Password'),
-            buildTextField(_passwordController, 'Enter New Password'),
-            const SizedBox(height: 16),
-            buildTextFieldLabel('Email'),
-            buildTextField(_emailController, 'Enter New Email'),
+            const SizedBox(height: 30),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Password',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                hintText: 'Enter New Password',
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Email',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                hintText: 'Enter New Email',
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+              ),
+            ),
             const SizedBox(height: 30),
             ElevatedButton(
+              onPressed: () {
+                // aksi perubahan data
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2196F3),
+                backgroundColor: Colors.blue,
+                minimumSize: const Size.fromHeight(45),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                elevation: 4,
               ),
-              onPressed: () {
-                // Tambahkan aksi perubahan
-              },
-              child: const Text('Change', style: TextStyle(fontSize: 16)),
+              child: const Text(
+                'Change',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
             const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () {
-                // Tambahkan aksi hapus akun
+            TextButton(
+              onPressed: () {
+                // aksi delete akun
               },
               child: const Text(
                 'Delete account',
-                style: TextStyle(color: Colors.red, fontSize: 14),
+                style: TextStyle(color: Colors.red),
               ),
-            ),
+            )
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildTextFieldLabel(String label) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        label,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  Widget buildTextField(TextEditingController controller, String hint) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: hint,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(24),
         ),
       ),
     );

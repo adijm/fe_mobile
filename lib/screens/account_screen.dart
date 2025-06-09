@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'saved_books_screen.dart';
+import 'account_setting_screen.dart';
+import 'history_screen.dart';
+import 'help_support_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   final String username;
@@ -49,7 +53,7 @@ class AccountScreen extends StatelessWidget {
                   count: '2 Buku',
                   label: 'Dipinjam',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Buku Dipinjam')));
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
                 _buildStatCard(
@@ -58,7 +62,7 @@ class AccountScreen extends StatelessWidget {
                   count: '1 Buku',
                   label: 'Dikembalikan',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Buku Dikembalikan')));
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
                 _buildStatCard(
@@ -67,7 +71,7 @@ class AccountScreen extends StatelessWidget {
                   count: 'Rp 0',
                   label: 'Denda',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Denda')));
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
               ],
@@ -91,28 +95,28 @@ class AccountScreen extends StatelessWidget {
                     icon: Icons.bookmark,
                     label: 'Saved Books',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Saved Books')));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedBooksScreen()));
                     },
                   ),
                   _AccountOption(
                     icon: Icons.settings,
                     label: 'Account Setting',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Account Settings')));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountSettingScreen()));
                     },
                   ),
                   _AccountOption(
                     icon: Icons.history,
                     label: 'History',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'History')));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                     },
                   ),
                   _AccountOption(
                     icon: Icons.help,
                     label: 'Help and Support',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const DummyPage(title: 'Help & Support')));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpSupportScreen()));
                     },
                   ),
                   _AccountOption(
@@ -145,7 +149,7 @@ class AccountScreen extends StatelessWidget {
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                       ),
                                       onPressed: () {
-                                        Navigator.of(context).pop(); // close dialog
+                                        Navigator.of(context).pop();
                                         Navigator.pushNamedAndRemoveUntil(
                                           context,
                                           '/login',
@@ -219,21 +223,6 @@ class _AccountOption extends StatelessWidget {
       title: Text(label, style: const TextStyle(color: Colors.black87)),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black38),
       onTap: onTap,
-    );
-  }
-}
-
-// DummyPage buat testing navigasi
-class DummyPage extends StatelessWidget {
-  final String title;
-
-  const DummyPage({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text('Ini halaman $title')),
     );
   }
 }

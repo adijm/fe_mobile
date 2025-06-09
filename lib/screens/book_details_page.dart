@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'models/book_model.dart';
 import 'borrow_screen.dart';
+import 'library_screen.dart';
 
 class BookDetailsPage extends StatelessWidget {
   final String imagePath;
@@ -33,10 +34,7 @@ class BookDetailsPage extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: Text(title), backgroundColor: Colors.green),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -59,56 +57,38 @@ class BookDetailsPage extends StatelessWidget {
             // Title
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
 
             // Author
             Text(
               'Author: $author',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 8),
 
             // Genre
             Text(
               'Genre: $genre',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 8),
 
             // Year
             Text(
               'Year Published: $year',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 24),
 
             // Description
             const Text(
               'Description:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text(
-              description,
-              style: const TextStyle(fontSize: 16),
-            ),
+            Text(description, style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 32),
 
             // Tombol Borrow
@@ -124,7 +104,10 @@ class BookDetailsPage extends StatelessWidget {
                 label: const Text("Borrow"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 14,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
