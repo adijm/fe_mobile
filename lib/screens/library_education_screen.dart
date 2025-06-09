@@ -211,33 +211,3 @@ class LibraryEducationScreen extends StatelessWidget {
     );
   }
 }
-
-// Halaman Detail Buku
-class BookDetailScreen extends StatelessWidget {
-  final Map<String, String> book;
-  const BookDetailScreen({required this.book, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(book['title'] ?? 'Detail Buku')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Image.asset(book['image']!, height: 200),
-            const SizedBox(height: 16),
-            Text(
-              book['title']!,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Penulis: ${book['author']}'),
-            const SizedBox(height: 8),
-            Text('Kategori: ${book['category']}'),
-          ],
-        ),
-      ),
-    );
-  }
-}

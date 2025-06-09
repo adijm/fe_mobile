@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'library_fiction_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_education_screen.dart';
+import 'book_details_page.dart';
 
 class LibraryChildScreen extends StatelessWidget {
   const LibraryChildScreen({super.key});
@@ -14,24 +15,32 @@ class LibraryChildScreen extends StatelessWidget {
         'category': 'Seri Binatang',
         'title': 'Dongeng Anak Terlengkap',
         'author': 'Kak Thifa',
+        'year': '2021',
+        'description': 'Kumpulan dongeng anak dengan pesan moral yang baik dan ilustrasi menarik.'
       },
       {
         'image': 'assets/belajar_membaca.png',
         'category': 'Aktivitas anak pintar',
         'title': 'Belajar Membaca',
         'author': 'Amazing Kids',
+        'year': '2020',
+        'description': 'Buku edukatif untuk membantu anak belajar membaca secara menyenangkan.'
       },
       {
         'image': 'assets/berhitung.png',
         'category': 'Untuk anak usia 2-5 tahun',
         'title': 'Belajar Berhitung & mengenal angka',
         'author': 'Zahra, S.Pd.',
+        'year': '2019',
+        'description': 'Mengenalkan konsep angka dan berhitung dasar untuk anak usia dini.'
       },
       {
         'image': 'assets/akhlak.jpg',
-        'category': 'pendidikan anak',
+        'category': 'Pendidikan Anak',
         'title': 'Akhlak',
         'author': 'Mutiara Sani',
+        'year': '2022',
+        'description': 'Buku pembelajaran akhlak untuk membentuk karakter positif pada anak.'
       },
     ];
 
@@ -87,7 +96,14 @@ class LibraryChildScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BookDetailScreen(book: book),
+                            builder: (_) => BookDetailsPage(
+                              imagePath: book['image']!,
+                              title: book['title']!,
+                              author: book['author']!,
+                              genre: book['category']!,
+                              year: book['year']!,
+                              description: book['description']!,
+                            ),
                           ),
                         );
                       },
@@ -204,36 +220,6 @@ class LibraryChildScreen extends StatelessWidget {
             color: isActive ? Colors.blue : Colors.black87,
             fontWeight: FontWeight.bold,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// Halaman detail buku sementara
-class BookDetailScreen extends StatelessWidget {
-  final Map<String, String> book;
-  const BookDetailScreen({required this.book, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(book['title'] ?? 'Detail Buku')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Image.asset(book['image']!, height: 200),
-            const SizedBox(height: 16),
-            Text(
-              book['title']!,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Penulis: ${book['author']}'),
-            const SizedBox(height: 8),
-            Text('Kategori: ${book['category']}'),
-          ],
         ),
       ),
     );

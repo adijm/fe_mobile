@@ -52,8 +52,7 @@ class LibraryFictionScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Kategori Tab Navigasi
+            // Tab Kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -66,9 +65,7 @@ class LibraryFictionScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
-
             // Daftar Buku
             Expanded(
               child: Container(
@@ -134,8 +131,11 @@ class LibraryFictionScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_ios,
-                              size: 16, color: Colors.green),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.green,
+                          ),
                         ],
                       ),
                     );
@@ -146,7 +146,6 @@ class LibraryFictionScreen extends StatelessWidget {
           ],
         ),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         type: BottomNavigationBarType.fixed,
@@ -157,12 +156,10 @@ class LibraryFictionScreen extends StatelessWidget {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
           BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), label: 'Return'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
         ],
       ),
     );
@@ -186,8 +183,7 @@ class LibraryFictionScreen extends StatelessWidget {
           default:
             targetScreen = const LibraryFictionScreen();
         }
-
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => targetScreen),
         );
@@ -210,7 +206,6 @@ class LibraryFictionScreen extends StatelessWidget {
   }
 }
 
-// Halaman detail buku sementara
 class BookDetailScreen extends StatelessWidget {
   final Map<String, String> book;
   const BookDetailScreen({required this.book, super.key});

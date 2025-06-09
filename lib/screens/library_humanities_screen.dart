@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'library_child_screen.dart';
 import 'library_education_screen.dart';
 import 'library_fiction_screen.dart';
+import 'book_details_page.dart'; // ← tambahkan ini
 
 class LibraryHumanitiesScreen extends StatelessWidget {
   const LibraryHumanitiesScreen({super.key});
@@ -14,24 +15,36 @@ class LibraryHumanitiesScreen extends StatelessWidget {
         'category': 'Filsafat Politik',
         'title': 'The Social Contract',
         'author': 'Jean-Jacques Rousseau',
+        'year': '1762',
+        'description':
+            'Karya klasik filsafat politik yang membahas hubungan antara individu dan negara serta konsep kontrak sosial.'
       },
       {
         'image': 'assets/orientalism_humanities.png',
         'category': 'Representasi Budaya',
         'title': 'Orientalism',
         'author': 'Edward W Said',
+        'year': '1978',
+        'description':
+            'Buku penting dalam kajian post-kolonial yang mengkritik cara pandang Barat terhadap dunia Timur.'
       },
       {
         'image': 'assets/the_republic_human.png',
-        'category': 'Noris Clasik',
+        'category': 'Noris Klasik',
         'title': 'The Republic',
         'author': 'Plato',
+        'year': '380 SM',
+        'description':
+            'Dialog filsafat yang membahas keadilan, bentuk negara ideal, dan peran filsuf dalam pemerintahan.'
       },
       {
         'image': 'assets/sapiens.jpg',
-        'category': 'Sejarah dan peradaban',
+        'category': 'Sejarah dan Peradaban',
         'title': 'Sapiens',
         'author': 'Yuval Noah Harari',
+        'year': '2011',
+        'description':
+            'Sejarah ringkas umat manusia, dari zaman purba hingga era modern, dengan pendekatan interdisipliner.'
       },
     ];
 
@@ -87,7 +100,14 @@ class LibraryHumanitiesScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BookDetailScreen(book: book),
+                            builder: (_) => BookDetailsPage(
+                              imagePath: book['image']!,
+                              title: book['title']!,
+                              author: book['author']!,
+                              genre: book['category']!,
+                              year: book['year']!,
+                              description: book['description']!,
+                            ),
                           ),
                         );
                       },
@@ -206,36 +226,6 @@ class LibraryHumanitiesScreen extends StatelessWidget {
             color: isActive ? Colors.blue : Colors.black87,
             fontWeight: FontWeight.bold,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// Halaman Detail Buku
-class BookDetailScreen extends StatelessWidget {
-  final Map<String, String> book;
-  const BookDetailScreen({required this.book, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(book['title'] ?? 'Detail Buku')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Image.asset(book['image']!, height: 200),
-            const SizedBox(height: 16),
-            Text(
-              book['title']!,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Penulis: ${book['author']}'),
-            const SizedBox(height: 8),
-            Text('Kategori: ${book['category']}'),
-          ],
         ),
       ),
     );
