@@ -12,7 +12,7 @@ class ApiService {
     String email,
     String password,
   ) async {
-    final url = Uri.parse('http://127.0.0.1:8000/api/register');
+    final url = Uri.parse('$baseUrl/register');
 
     final response = await http.post(
       url,
@@ -21,7 +21,6 @@ class ApiService {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        // <--- ubah ini jadi jsonEncode
         'name': name,
         'username': username,
         'email': email,
@@ -29,8 +28,17 @@ class ApiService {
       }),
     );
 
-    if (response.statusCode == 200) {
+    print('>>> [REGISTER] Status Code: ${response.statusCode}');
+    print('>>> [REGISTER] Body: ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
+
+      // Simpan token ke SharedPreferences (opsional)
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', data['token']);
+      await prefs.setInt('user_id', data['user']['id']);
+
       print('Registrasi berhasil: $data');
       return true;
     } else {
@@ -39,12 +47,12 @@ class ApiService {
     }
   }
 
-  // LOGIN: Mengambil token dari Laravel Sanctum
+  // LOGIN
   static Future<Map<String, dynamic>> login({
     required String username,
     required String password,
   }) async {
-    final url = Uri.parse('http://127.0.0.1:8000/api/login');
+    final url = Uri.parse('$baseUrl/login');
     final response = await http.post(
       url,
       headers: {'Accept': 'application/json'},
@@ -54,30 +62,25 @@ class ApiService {
     final data = json.decode(response.body);
 
     if (response.statusCode == 200 && data['token'] != null) {
-      // Simpan token ke SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', data['token']);
-      await prefs.setInt('user_id', data['user']['id']); // Simpan juga user_id
-
+      await prefs.setInt('user_id', data['user']['id']);
       return {'success': true, 'user': data['user']};
     } else {
       return {'success': false, 'error': data['message'] ?? 'Login gagal'};
     }
   }
 
-  // AMBIL TOKEN
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
 
-  // AMBIL USER ID
   static Future<int?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('user_id');
   }
 
-  // PEMINJAMAN BUKU
   static Future<Map<String, dynamic>> borrowBook({
     required int bukuId,
     required int userId,
@@ -88,7 +91,7 @@ class ApiService {
       return {'success': false, 'error': 'Token tidak ditemukan. Login dulu.'};
     }
 
-    final url = Uri.parse('http://127.0.0.1:8000/api/pinjamBuku');
+    final url = Uri.parse('$baseUrl/pinjamBuku');
 
     final response = await http.post(
       url,
@@ -113,7 +116,6 @@ class ApiService {
     }
   }
 
-  // LOGOUT (Opsional)
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');

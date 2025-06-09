@@ -1,96 +1,104 @@
 import 'package:flutter/material.dart';
 
 class SavedBooksScreen extends StatelessWidget {
-  const SavedBooksScreen({super.key});
+  const SavedBooksScreen({Key? key}) : super(key: key);
 
+  // Data contoh buku
   final List<Map<String, String>> books = const [
     {
       'title': 'Rahasia Pelangi',
-      'image': 'assets/books/rahasia_pelangi.png',
+      'image': 'rahasia_pelangi.jpg',
     },
     {
       'title': 'Aku Belajar Akhlak',
-      'image': 'assets/books/akhlak.png',
+      'image': 'akhlak.jpg',
     },
     {
       'title': 'Sapiens',
-      'image': 'assets/books/sapiens.png',
+      'image': 'sapiens.jpg',
     },
     {
       'title': 'The Hobbit',
-      'image': 'assets/books/hobbit.png',
+      'image': 'the_hobbit.jpg',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[100],
       appBar: AppBar(
-        backgroundColor: Colors.blue[100],
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Saved Books',
-          style: TextStyle(color: Colors.black87),
-        ),
+        title: const Text('Saved Books'),
         centerTitle: true,
+        backgroundColor: const Color(0xFFB3D7F3),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        elevation: 0,
       ),
-      body: Container(
-        padding: const EdgeInsets.all(12),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: GridView.builder(
           itemCount: books.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: 2, // Dua kolom
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
             childAspectRatio: 0.65,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
           ),
           itemBuilder: (context, index) {
-            return _buildBookCard(books[index]);
+            return BookCard(
+              title: books[index]['title']!,
+              imagePath: books[index]['image']!,
+            );
           },
         ),
       ),
     );
   }
+}
 
-  Widget _buildBookCard(Map<String, String> book) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                book['image']!,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Container(
-                width: 20,
-                height: 24,
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(4),
-                    bottomLeft: Radius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ],
+class BookCard extends StatelessWidget {
+  final String title;
+  final String imagePath;
+
+  const BookCard({
+    Key? key,
+    required this.title,
+    required this.imagePath,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            imagePath,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
+        Positioned(
+          top: 8,
+          right: 8,
+          child: Container(
+            width: 20,
+            height: 20,
+            decoration: const BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(4),
+                bottomLeft: Radius.circular(4),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

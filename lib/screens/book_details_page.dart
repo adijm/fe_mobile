@@ -50,7 +50,6 @@ class BookDetailsPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text("Yes, Borrow book"),
-                style: TextStyle(color: Colors.white),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context),
