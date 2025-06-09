@@ -5,6 +5,7 @@ import 'borrow_screen.dart';
 import 'library_screen.dart';
 import 'account_screen.dart';
 import 'book_details_page.dart';
+import 'return_kosong.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.userName});
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _buildHomeContent(),
       const LibraryScreen(),
       BorrowScreen(book: dummyBook),
+      const ReturnScreen(),
       AccountScreen(username: widget.userName),
     ];
   }
@@ -58,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
+          BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), label: 'Return'),
           BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
         ],
       ),

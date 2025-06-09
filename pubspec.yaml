@@ -50,7 +50,9 @@ flutter:
     - assets/orientalism_humanities.png
     - assets/pendidikan_pancasila.png
     - assets/the_republic_human.png
+
   fonts:
     - family: DancingScript
       fonts:
         - asset: assets/fonts/DancingScript-VariableFont_wght.ttf
+
