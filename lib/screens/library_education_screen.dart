@@ -52,8 +52,7 @@ class LibraryEducationScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Kategori Tab
+            // Tab Kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -66,9 +65,7 @@ class LibraryEducationScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
-
             // Daftar Buku
             Expanded(
               child: Container(
@@ -149,7 +146,6 @@ class LibraryEducationScreen extends StatelessWidget {
           ],
         ),
       ),
-
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
@@ -181,15 +177,14 @@ class LibraryEducationScreen extends StatelessWidget {
           case 'Humanities':
             targetScreen = const LibraryHumanitiesScreen();
             break;
-          case 'Fiction':
-            targetScreen = const LibraryFictionScreen();
-            break;
           case 'Education':
-          default:
             targetScreen = const LibraryEducationScreen();
+            break;
+          case 'Fiction':
+          default:
+            targetScreen = const LibraryFictionScreen();
         }
-
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => targetScreen),
         );
@@ -206,6 +201,35 @@ class LibraryEducationScreen extends StatelessWidget {
             color: isActive ? Colors.blue : Colors.black87,
             fontWeight: FontWeight.bold,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class BookDetailScreen extends StatelessWidget {
+  final Map<String, String> book;
+  const BookDetailScreen({required this.book, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(book['title'] ?? 'Detail Buku')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Image.asset(book['image']!, height: 200),
+            const SizedBox(height: 16),
+            Text(
+              book['title']!,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text('Penulis: ${book['author']}'),
+            const SizedBox(height: 8),
+            Text('Kategori: ${book['category']}'),
+          ],
         ),
       ),
     );

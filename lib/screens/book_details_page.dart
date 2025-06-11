@@ -141,17 +141,6 @@ class BookDetailsPage extends StatelessWidget {
                       author,
                       style: const TextStyle(color: Colors.grey),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        return Icon(
-                          Icons.star,
-                          size: 24,
-                          color: index < 3 ? Colors.amber : Colors.grey.shade300,
-                        );
-                      }),
-                    ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
