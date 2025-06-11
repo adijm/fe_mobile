@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'library_child_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_education_screen.dart';
+import 'book_details_page.dart';
 
 class LibraryFictionScreen extends StatelessWidget {
   const LibraryFictionScreen({super.key});
@@ -14,24 +15,32 @@ class LibraryFictionScreen extends StatelessWidget {
         'category': 'Fiksi Perjalanan Anak',
         'title': 'Laskar Pelangi',
         'author': 'Andrea Hirata',
+        'year': '2005',
+        'description': 'Cerita inspiratif tentang perjuangan anak-anak di Belitung.'
       },
       {
         'image': 'assets/the_hobbit.jpg',
         'category': 'Fantasi Dunia Tengah',
         'title': 'The Hobbit',
         'author': 'J.R.R. Tolkien',
+        'year': '1937',
+        'description': 'Petualangan hobbit Bilbo Baggins di dunia Middle-earth.'
       },
       {
         'image': 'assets/rahasia_pelangi.jpg',
         'category': 'Fiksi anak',
         'title': 'Rahasia Pelangi',
         'author': 'Riawany Elita',
+        'year': '2018',
+        'description': 'Kisah persahabatan dan keajaiban pelangi.'
       },
       {
         'image': 'assets/perahu_kertas.jpg',
         'category': 'Fiksi dewasa',
         'title': 'Perahu Kertas',
         'author': 'Amelia',
+        'year': '2009',
+        'description': 'Cerita romantis tentang mimpi dan cinta anak muda.'
       },
     ];
 
@@ -84,7 +93,14 @@ class LibraryFictionScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BookDetailScreen(book: book),
+                            builder: (_) => BookDetailsPage(
+                              imagePath: book['image']!,
+                              title: book['title']!,
+                              author: book['author']!,
+                              genre: book['category']!,
+                              year: book['year']!,
+                              description: book['description']!,
+                            ),
                           ),
                         );
                       },
@@ -200,35 +216,6 @@ class LibraryFictionScreen extends StatelessWidget {
             color: isActive ? Colors.blue : Colors.black87,
             fontWeight: FontWeight.bold,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class BookDetailScreen extends StatelessWidget {
-  final Map<String, String> book;
-  const BookDetailScreen({required this.book, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(book['title'] ?? 'Detail Buku')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Image.asset(book['image']!, height: 200),
-            const SizedBox(height: 16),
-            Text(
-              book['title']!,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Penulis: ${book['author']}'),
-            const SizedBox(height: 8),
-            Text('Kategori: ${book['category']}'),
-          ],
         ),
       ),
     );
