@@ -53,7 +53,8 @@ class AccountScreen extends StatelessWidget {
                   count: '2 Buku',
                   label: 'Dipinjam',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
                 _buildStatCard(
@@ -62,7 +63,8 @@ class AccountScreen extends StatelessWidget {
                   count: '1 Buku',
                   label: 'Dikembalikan',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
                 _buildStatCard(
@@ -71,7 +73,8 @@ class AccountScreen extends StatelessWidget {
                   count: 'Rp 0',
                   label: 'Denda',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
               ],
@@ -95,28 +98,36 @@ class AccountScreen extends StatelessWidget {
                     icon: Icons.bookmark,
                     label: 'Saved Books',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedBooksScreen()));
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => const SavedBooksScreen()));
                     },
                   ),
                   _AccountOption(
                     icon: Icons.settings,
                     label: 'Account Setting',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountSettingScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AccountSettingScreen(username: username),
+                        ),
+                      );
                     },
                   ),
                   _AccountOption(
                     icon: Icons.history,
                     label: 'History',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                     },
                   ),
                   _AccountOption(
                     icon: Icons.help,
                     label: 'Help and Support',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpSupportScreen()));
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => const HelpSupportScreen()));
                     },
                   ),
                   _AccountOption(
@@ -146,7 +157,8 @@ class AccountScreen extends StatelessWidget {
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.red,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12)),
                                       ),
                                       onPressed: () {
                                         Navigator.of(context).pop();
@@ -156,11 +168,13 @@ class AccountScreen extends StatelessWidget {
                                           (route) => false,
                                         );
                                       },
-                                      child: const Text("Yes, Log Out", style: TextStyle(color: Colors.white)),
+                                      child: const Text("Yes, Log Out",
+                                          style: TextStyle(color: Colors.white)),
                                     ),
                                     TextButton(
                                       onPressed: () => Navigator.of(context).pop(),
-                                      child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+                                      child: const Text("Cancel",
+                                          style: TextStyle(color: Colors.grey)),
                                     ),
                                   ],
                                 ),
@@ -214,7 +228,11 @@ class _AccountOption extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _AccountOption({required this.icon, required this.label, required this.onTap});
+  const _AccountOption({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

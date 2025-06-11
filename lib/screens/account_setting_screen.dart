@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AccountSettingScreen extends StatefulWidget {
-  const AccountSettingScreen({super.key});
+  final String username;
+
+  const AccountSettingScreen({super.key, required this.username});
 
   @override
   State<AccountSettingScreen> createState() => _AccountSettingScreenState();
@@ -46,13 +48,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Text(
-                  '@tania19',
-                  style: TextStyle(fontSize: 16),
+                  '@${widget.username}',
+                  style: const TextStyle(fontSize: 16),
                 ),
-                SizedBox(width: 5),
-                Icon(Icons.edit, size: 16, color: Colors.grey),
+                const SizedBox(width: 5),
+                const Icon(Icons.edit, size: 16, color: Colors.grey),
               ],
             ),
             const SizedBox(height: 30),
@@ -69,8 +71,8 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
               obscureText: true,
               decoration: InputDecoration(
                 hintText: 'Enter New Password',
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),
@@ -89,8 +91,8 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
               controller: emailController,
               decoration: InputDecoration(
                 hintText: 'Enter New Email',
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),
