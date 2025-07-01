@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'library_child_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_fiction_screen.dart';
-
+import 'home_screen.dart';
+import 'book_details_page.dart'; 
 class LibraryEducationScreen extends StatelessWidget {
   const LibraryEducationScreen({super.key});
 
@@ -14,24 +15,36 @@ class LibraryEducationScreen extends StatelessWidget {
         'category': 'Teknologi Pendidikan',
         'title': 'Informatika',
         'author': 'Kemendikbud',
+        'year': '2023',
+        'description':
+            'Buku ajar informatika dari Kemendikbud untuk pelajar tingkat dasar hingga menengah.',
       },
       {
         'image': 'assets/belajar_membaca.png',
         'category': 'Aktivitas Literasi Anak',
         'title': 'Belajar Membaca',
         'author': 'Amazing Kids',
+        'year': '2021',
+        'description':
+            'Buku edukatif untuk meningkatkan kemampuan membaca anak-anak dengan metode menyenangkan.',
       },
       {
         'image': 'assets/berhitung.png',
         'category': 'Numerasi Anak',
         'title': 'Belajar Berhitung & mengenal angka',
         'author': 'Zahra, S.Pd.',
+        'year': '2020',
+        'description':
+            'Mengenalkan angka dan logika berhitung dasar untuk anak-anak prasekolah.',
       },
       {
         'image': 'assets/kebersamaan_education.png',
         'category': 'Buku Tematik Terpadu',
         'title': 'Kebersamaan',
         'author': 'Kemendikbud',
+        'year': '2022',
+        'description':
+            'Buku tematik SD yang mengajarkan nilai-nilai kebersamaan dan gotong royong.',
       },
     ];
 
@@ -52,8 +65,6 @@ class LibraryEducationScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Kategori Tab
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -66,10 +77,7 @@ class LibraryEducationScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Daftar Buku
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -87,7 +95,15 @@ class LibraryEducationScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BookDetailScreen(book: book),
+                            builder:
+                                (_) => BookDetailsPage(
+                                  imagePath: book['image']!,
+                                  title: book['title']!,
+                                  author: book['author']!,
+                                  genre: book['category']!,
+                                  year: book['year']!,
+                                  description: book['description']!,
+                                ),
                           ),
                         );
                       },
@@ -149,47 +165,69 @@ class LibraryEducationScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          Navigator.pop(context);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => HomeScreen(
+                    userName:
+                        'Guest', // Ganti nanti pakai user login jika tersedia
+                    initialIndex: index,
+                  ),
+            ),
+            (route) => false,
+          );
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), label: 'Return'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_turned_in),
+            label: 'Return',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
+  Widget _buildCategoryTab(
+    BuildContext context,
+    String label, {
+    bool isActive = false,
+  }) {
+    Widget targetScreen;
+    switch (label) {
+      case 'Child':
+        targetScreen = const LibraryChildScreen();
+        break;
+      case 'Humanities':
+        targetScreen = const LibraryHumanitiesScreen();
+        break;
+      case 'Fiction':
+        targetScreen = const LibraryFictionScreen();
+        break;
+      case 'Education':
+      default:
+        targetScreen = const LibraryEducationScreen();
+    }
+
     return InkWell(
       onTap: () {
-        Widget targetScreen;
-        switch (label) {
-          case 'Child':
-            targetScreen = const LibraryChildScreen();
-            break;
-          case 'Humanities':
-            targetScreen = const LibraryHumanitiesScreen();
-            break;
-          case 'Fiction':
-            targetScreen = const LibraryFictionScreen();
-            break;
-          case 'Education':
-          default:
-            targetScreen = const LibraryEducationScreen();
-        }
-
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => targetScreen),
         );

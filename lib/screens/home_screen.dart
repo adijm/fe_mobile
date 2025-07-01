@@ -8,20 +8,27 @@ import 'book_details_page.dart';
 import 'return_kosong.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.userName});
   final String userName;
+  final int initialIndex;
+
+  const HomeScreen({
+    super.key,
+    required this.userName,
+    this.initialIndex = 0,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
   late List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
 
     Book dummyBook = Book(
       id: 1,
@@ -113,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 20),
 
-          // Stat Cards with GestureDetector
+          // Stat Cards
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -146,7 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Book Cards
           _buildBookCard(
             imagePath: 'assets/the_hobbit.jpg',
             title: 'The Hobbit',

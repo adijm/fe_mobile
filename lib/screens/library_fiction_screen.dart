@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'library_child_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_education_screen.dart';
+import 'home_screen.dart';
 
 class LibraryFictionScreen extends StatelessWidget {
   const LibraryFictionScreen({super.key});
@@ -23,13 +24,13 @@ class LibraryFictionScreen extends StatelessWidget {
       },
       {
         'image': 'assets/rahasia_pelangi.jpg',
-        'category': 'Fiksi anak',
+        'category': 'Fiksi Anak',
         'title': 'Rahasia Pelangi',
         'author': 'Riawany Elita',
       },
       {
         'image': 'assets/perahu_kertas.jpg',
-        'category': 'Fiksi dewasa',
+        'category': 'Fiksi Dewasa',
         'title': 'Perahu Kertas',
         'author': 'Amelia',
       },
@@ -52,7 +53,8 @@ class LibraryFictionScreen extends StatelessWidget {
                 ),
               ),
             ),
-            // Tab Kategori
+
+            // Tab kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -65,8 +67,10 @@ class LibraryFictionScreen extends StatelessWidget {
                 ],
               ),
             ),
+
             const SizedBox(height: 16),
-            // Daftar Buku
+
+            // List Buku
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -131,11 +135,7 @@ class LibraryFictionScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: Colors.green,
-                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.green),
                         ],
                       ),
                     );
@@ -146,13 +146,24 @@ class LibraryFictionScreen extends StatelessWidget {
           ],
         ),
       ),
+
+      // Bottom navigation lengkap
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
+        currentIndex: 1, // tab Library
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          Navigator.pop(context);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HomeScreen(
+                userName: 'Guest', // atau dari login session
+                initialIndex: index,
+              ),
+            ),
+            (route) => false,
+          );
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -166,23 +177,24 @@ class LibraryFictionScreen extends StatelessWidget {
   }
 
   Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
+    Widget targetScreen;
+    switch (label) {
+      case 'Child':
+        targetScreen = const LibraryChildScreen();
+        break;
+      case 'Humanities':
+        targetScreen = const LibraryHumanitiesScreen();
+        break;
+      case 'Education':
+        targetScreen = const LibraryEducationScreen();
+        break;
+      case 'Fiction':
+      default:
+        targetScreen = const LibraryFictionScreen();
+    }
+
     return InkWell(
       onTap: () {
-        Widget targetScreen;
-        switch (label) {
-          case 'Child':
-            targetScreen = const LibraryChildScreen();
-            break;
-          case 'Humanities':
-            targetScreen = const LibraryHumanitiesScreen();
-            break;
-          case 'Education':
-            targetScreen = const LibraryEducationScreen();
-            break;
-          case 'Fiction':
-          default:
-            targetScreen = const LibraryFictionScreen();
-        }
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => targetScreen),

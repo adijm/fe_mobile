@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'library_child_screen.dart';
 import 'library_education_screen.dart';
 import 'library_fiction_screen.dart';
-import 'book_details_page.dart'; // ← tambahkan ini
+import 'book_details_page.dart';
+import 'home_screen.dart';
 
 class LibraryHumanitiesScreen extends StatelessWidget {
   const LibraryHumanitiesScreen({super.key});
@@ -65,8 +66,6 @@ class LibraryHumanitiesScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Tab Kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -79,10 +78,7 @@ class LibraryHumanitiesScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Daftar Buku
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -169,15 +165,22 @@ class LibraryHumanitiesScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
+        currentIndex: 1, // Library tab
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          Navigator.pop(context);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HomeScreen(
+                userName: 'Guest', // atau dari login session
+                initialIndex: index,
+              ),
+            ),
+            (route) => false,
+          );
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -191,25 +194,25 @@ class LibraryHumanitiesScreen extends StatelessWidget {
   }
 
   Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
+    Widget targetScreen;
+    switch (label) {
+      case 'Child':
+        targetScreen = const LibraryChildScreen();
+        break;
+      case 'Education':
+        targetScreen = const LibraryEducationScreen();
+        break;
+      case 'Fiction':
+        targetScreen = const LibraryFictionScreen();
+        break;
+      case 'Humanities':
+      default:
+        targetScreen = const LibraryHumanitiesScreen();
+    }
+
     return InkWell(
       onTap: () {
-        Widget targetScreen;
-        switch (label) {
-          case 'Child':
-            targetScreen = const LibraryChildScreen();
-            break;
-          case 'Education':
-            targetScreen = const LibraryEducationScreen();
-            break;
-          case 'Fiction':
-            targetScreen = const LibraryFictionScreen();
-            break;
-          case 'Humanities':
-          default:
-            targetScreen = const LibraryHumanitiesScreen();
-        }
-
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => targetScreen),
         );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home_screen.dart'; 
 import 'library_fiction_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_education_screen.dart';
@@ -150,11 +151,7 @@ class LibraryChildScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: Colors.green,
-                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.green),
                         ],
                       ),
                     );
@@ -165,13 +162,24 @@ class LibraryChildScreen extends StatelessWidget {
           ],
         ),
       ),
+
+      // Bottom Navigation yang langsung ke HomeScreen dan aktifkan tab yang sesuai
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
+        currentIndex: 1, // posisi Library
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          Navigator.pop(context);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HomeScreen(
+                userName: 'Guest', // atau isi dari auth kamu
+                initialIndex: index,
+              ),
+            ),
+            (route) => false,
+          );
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -184,7 +192,7 @@ class LibraryChildScreen extends StatelessWidget {
     );
   }
 
-  // Widget untuk tab kategori dengan navigasi ke file yang sesuai
+  // Widget tab kategori
   Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
     return InkWell(
       onTap: () {
@@ -200,7 +208,7 @@ class LibraryChildScreen extends StatelessWidget {
             targetScreen = const LibraryEducationScreen();
             break;
           default:
-            targetScreen = const LibraryChildScreen(); // untuk "Child"
+            targetScreen = const LibraryChildScreen();
         }
 
         Navigator.push(
