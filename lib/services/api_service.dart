@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'package:forumapp/screens/models/book_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   static const String baseUrl = 'http://127.0.0.1:8000/api';
 
-  // Fungsi register sesuai API Laravel
+  // ================================
+  // AUTH
+  // ================================
+
   static Future<bool> register(
     String name,
     String username,
@@ -33,26 +37,21 @@ class ApiService {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
-
-      // Simpan token ke SharedPreferences (opsional)
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', data['token']);
       await prefs.setInt('user_id', data['user']['id']);
-
-      print('Registrasi berhasil: $data');
       return true;
     } else {
-      print('Registrasi gagal: ${response.body}');
       return false;
     }
   }
 
-  // LOGIN
   static Future<Map<String, dynamic>> login({
     required String username,
     required String password,
   }) async {
     final url = Uri.parse('$baseUrl/login');
+
     final response = await http.post(
       url,
       headers: {'Accept': 'application/json'},
@@ -71,6 +70,12 @@ class ApiService {
     }
   }
 
+  static Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('user_id');
+  }
+
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -80,6 +85,35 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('user_id');
   }
+
+  // ================================
+  // BUKU
+  // ================================
+
+  static Future<List<BookModel>> fetchBukuTerbaru() async {
+    final token = await getToken();
+    final url = Uri.parse('$baseUrl/buku-terbaru');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final res = json.decode(response.body);
+      final List data = res['data'];
+      return data.map((json) => BookModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Gagal memuat buku terbaru');
+    }
+  }
+
+  // ================================
+  // PEMINJAMAN
+  // ================================
 
   static Future<Map<String, dynamic>> borrowBook({
     required int bukuId,
@@ -114,11 +148,5 @@ class ApiService {
       print('Peminjaman gagal: ${response.body}');
       return {'success': false, 'error': response.body};
     }
-  }
-
-  static Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('user_id');
   }
 }

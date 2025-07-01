@@ -20,7 +20,7 @@ class BookDetailsPage extends StatelessWidget {
     required this.description,
   }) : super(key: key);
 
-  void _showBorrowDialog(BuildContext context, Book book) {
+  void _showBorrowDialog(BuildContext context, BookModel book) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -41,12 +41,16 @@ class BookDetailsPage extends StatelessWidget {
                   Navigator.pop(context); // close dialog
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => BorrowScreen(book: book)),
+                    MaterialPageRoute(
+                      builder: (_) => BorrowScreen(book: book),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text("Yes, Borrow book"),
@@ -83,13 +87,15 @@ class BookDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final book = Book(
+    // Buat objek BookModel dari data yang dikirim
+    final book = BookModel(
       id: 0,
-      image: imagePath,
-      category: genre,
       title: title,
       author: author,
+      categoryId: genre,
+      publicationYear: year,
       description: description,
+      coverUrl: imagePath,
     );
 
     return Scaffold(
@@ -125,10 +131,11 @@ class BookDetailsPage extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
+                      child: Image.network(
                         imagePath,
                         height: 220,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -165,7 +172,8 @@ class BookDetailsPage extends StatelessWidget {
                           backgroundColor: Colors.blue,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: const Text(
                           "Borrow",

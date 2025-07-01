@@ -6,6 +6,7 @@ import 'library_screen.dart';
 import 'account_screen.dart';
 import 'book_details_page.dart';
 import 'return_kosong.dart';
+import '../services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.userName});
@@ -19,21 +20,29 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   late List<Widget> _pages;
 
+  final TextEditingController _searchController = TextEditingController();
+  List<dynamic> _recommendedBooks = [];
+  bool _isLoading = true;
+  String _searchTerm = '';
+
   @override
   void initState() {
     super.initState();
+    _loadRecommendedBooks();
 
-    Book dummyBook = Book(
+    BookModel dummyBook = BookModel(
       id: 1,
-      image: 'assets/the_hobbit.jpg',
-      category: 'Fantasi',
+      coverUrl: 'assets/the_hobbit.jpg',
+      categoryId: 'Fantasi',
       title: 'The Hobbit',
       author: 'J.R.R. Tolkien',
+      publicationYear: '1937',
       description: 'Petualangan Bilbo Baggins mencari harta naga Smaug.',
     );
 
+    // Jangan assign _buildHomeContent() di sini
     _pages = [
-      _buildHomeContent(),
+      Container(), // placeholder dulu
       const LibraryScreen(),
       BorrowScreen(book: dummyBook),
       const ReturnScreen(),
@@ -41,11 +50,33 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
+  Future<void> _loadRecommendedBooks() async {
+    try {
+      final books = await ApiService.fetchBukuTerbaru();
+      print("DATA BUKU YANG DITERIMA: ${books.map((b) => b.title).toList()}");
+
+      setState(() {
+        _recommendedBooks = books;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching books: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(child: _pages[_selectedIndex]),
+      body: SafeArea(
+        child:
+            _selectedIndex == 0
+                ? _buildHomeContent() // <-- panggil ulang setiap kali build
+                : _pages[_selectedIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
@@ -58,38 +89,58 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), label: 'Return'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_turned_in),
+            label: 'Return',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
+          ),
         ],
       ),
     );
   }
 
   Widget _buildHomeContent() {
+    final filteredBooks =
+        _recommendedBooks.where((book) {
+          return book.title.toLowerCase().contains(_searchTerm.toLowerCase());
+        }).toList();
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Hello,", style: TextStyle(fontSize: 20, color: Colors.black87)),
-                  Text(widget.userName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Hello,",
+                    style: TextStyle(fontSize: 20, color: Colors.black87),
+                  ),
+                  Text(
+                    widget.userName,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
               const Icon(CupertinoIcons.bell, size: 28, color: Colors.green),
             ],
           ),
           const SizedBox(height: 20),
-
-          // Search Bar
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
@@ -97,12 +148,18 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(30),
             ),
             child: Row(
-              children: const [
-                Icon(Icons.search, color: Colors.grey),
-                SizedBox(width: 8),
+              children: [
+                const Icon(Icons.search, color: Colors.grey),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchTerm = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
                       hintText: "Search for books",
                       border: InputBorder.none,
                     ),
@@ -112,8 +169,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 20),
-
-          // Stat Cards with GestureDetector
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -123,7 +178,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               GestureDetector(
                 onTap: () => setState(() => _selectedIndex = 2),
-                child: _buildStatCardIcon(Icons.check_circle, Colors.blue, "0 Buku", "Sudah dikembalikan"),
+                child: _buildStatCardIcon(
+                  Icons.check_circle,
+                  Colors.blue,
+                  "0 Buku",
+                  "Sudah dikembalikan",
+                ),
               ),
               GestureDetector(
                 onTap: () => setState(() => _selectedIndex = 2),
@@ -132,56 +192,37 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 30),
-
-          // Recommend Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("RECOMMEND", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1.2)),
+              const Text(
+                "RECOMMEND",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  letterSpacing: 1.2,
+                ),
+              ),
               GestureDetector(
                 onTap: () => setState(() => _selectedIndex = 1),
-                child: const Text("See all >", style: TextStyle(color: Colors.green)),
+                child: const Text(
+                  "See all >",
+                  style: TextStyle(color: Colors.green),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-
-          // Book Cards
-          _buildBookCard(
-            imagePath: 'assets/the_hobbit.jpg',
-            title: 'The Hobbit',
-            author: 'J.R.R. Tolkien',
-            genre: 'Fantasi, Petualangan',
-            year: '1937',
-            description: 'Petualangan Bilbo Baggins bersama kurcaci mencari harta naga Smaug.',
-          ),
-          const SizedBox(height: 16),
-          _buildBookCard(
-            imagePath: 'assets/perahu_kertas.jpg',
-            title: 'Perahu Kertas',
-            author: 'Dee Lestari',
-            genre: 'Drama, Romansa',
-            year: '2009',
-            description: 'Kisah cinta remaja Kugy dan Keenan.',
-          ),
-          const SizedBox(height: 16),
-          _buildBookCard(
-            imagePath: 'assets/habibie_ainun.jpg',
-            title: 'Habibie & Ainun',
-            author: 'B.J. Habibie',
-            genre: 'Biografi, Romansa',
-            year: '2010',
-            description: 'Kisah cinta sejati Presiden ke-3 RI.',
-          ),
-          const SizedBox(height: 16),
-          _buildBookCard(
-            imagePath: 'assets/planet_luna.jpg',
-            title: 'Planet Luna',
-            author: 'Ray Antariska Yasmin',
-            genre: 'Fantasi, Remaja',
-            year: '2021',
-            description: 'Luna menemukan jati diri lewat dunia imajinasi.',
-          ),
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : filteredBooks.isEmpty
+              ? const Text("Tidak ada buku yang cocok.")
+              : Column(
+                children:
+                    filteredBooks
+                        .map((book) => _buildBookCardFromAPI(book))
+                        .toList(),
+              ),
         ],
       ),
     );
@@ -202,14 +243,26 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
         ],
       ),
     );
   }
 
-  static Widget _buildStatCardIcon(IconData icon, Color color, String value, String label) {
+  static Widget _buildStatCardIcon(
+    IconData icon,
+    Color color,
+    String value,
+    String label,
+  ) {
     return Container(
       width: 100,
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -224,38 +277,40 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Icon(icon, size: 24, color: color),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildBookCard({
-    required String imagePath,
-    required String title,
-    required String author,
-    required String genre,
-    required String year,
-    required String description,
-  }) {
+  Widget _buildBookCardFromAPI(dynamic book) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => BookDetailsPage(
-              imagePath: imagePath,
-              title: title,
-              author: author,
-              genre: genre,
-              year: year,
-              description: description,
-            ),
+            builder:
+                (_) => BookDetailsPage(
+                  imagePath: book.coverUrl,
+                  title: book.title,
+                  author: book.author,
+                  genre: book.publisher,
+                  year: book.publicationYear,
+                  description: book.description,
+                ),
           ),
         );
       },
       child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey[300]!),
@@ -266,11 +321,18 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                imagePath,
+              child: Image.network(
+                book.coverUrl,
                 width: 70,
                 height: 100,
                 fit: BoxFit.cover,
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      width: 70,
+                      height: 100,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.broken_image),
+                    ),
               ),
             ),
             const SizedBox(width: 12),
@@ -278,13 +340,28 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("$title -", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(author, style: const TextStyle(fontSize: 14, color: Colors.black54)),
+                  Text(
+                    book.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    book.author,
+                    style: const TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
                   const SizedBox(height: 8),
-                  Text("📖 Genre  : $genre", style: const TextStyle(fontSize: 13)),
-                  Text("📅 Tahun Terbit : $year", style: const TextStyle(fontSize: 13)),
+                  Text(
+                    "📖 Penerbit: ${book.publisher}",
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                  Text(
+                    "📅 Tahun Terbit: ${book.publicationYear}",
+                    style: const TextStyle(fontSize: 13),
+                  ),
                   const SizedBox(height: 8),
-                  Text("📖 Deskripsi :\n$description", style: const TextStyle(fontSize: 13)),
+                  // Text("📖 Deskripsi:\n${book.description}, style: const TextStyle(fontSize: 13)),
                 ],
               ),
             ),
