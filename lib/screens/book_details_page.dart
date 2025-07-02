@@ -11,20 +11,22 @@ class BookDetailsPage extends StatelessWidget {
   final String description;
 
   const BookDetailsPage({
-    Key? key,
     required this.imagePath,
     required this.title,
     required this.author,
     required this.genre,
     required this.year,
     required this.description,
-  }) : super(key: key);
+    super.key,
+  });
 
   void _showBorrowDialog(BuildContext context, BookModel book) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -38,7 +40,7 @@ class BookDetailsPage extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); // close dialog
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -61,7 +63,7 @@ class BookDetailsPage extends StatelessWidget {
                   "Cancel",
                   style: TextStyle(color: Colors.red),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -73,21 +75,17 @@ class BookDetailsPage extends StatelessWidget {
     return Column(
       children: [
         Text(
-          value,
+          value.isNotEmpty ? value : '-',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.grey),
-        ),
+        Text(label, style: const TextStyle(color: Colors.grey)),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Buat objek BookModel dari data yang dikirim
     final book = BookModel(
       id: 0,
       title: title,
@@ -95,6 +93,7 @@ class BookDetailsPage extends StatelessWidget {
       categoryId: genre,
       publicationYear: year,
       description: description,
+      publisher: '',
       coverUrl: imagePath,
     );
 
@@ -113,8 +112,12 @@ class BookDetailsPage extends StatelessWidget {
                 ),
                 const Text(
                   "Book Details",
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                )
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
@@ -132,16 +135,20 @@ class BookDetailsPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        imagePath,
+                        imagePath.isNotEmpty ? imagePath : 'https://via.placeholder.com/150',
                         height: 220,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.broken_image),
                       ),
                     ),
                     const SizedBox(height: 20),
                     Text(
                       title,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -180,12 +187,12 @@ class BookDetailsPage extends StatelessWidget {
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

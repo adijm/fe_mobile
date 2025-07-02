@@ -111,6 +111,63 @@ class ApiService {
     }
   }
 
+
+  // ================================
+  // KATEGORI BUKU
+  // ================================
+
+  static Future<List<Map<String, dynamic>>> fetchKategoriBuku() async {
+    final token = await getToken();
+    final url = Uri.parse('$baseUrl/kategori');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final List kategori = jsonData['data'];
+
+      return kategori.map<Map<String, dynamic>>((item) {
+        return {
+          'id': item['id'],
+          'nama': item['nama'],
+        };
+      }).toList();
+    } else {
+      print('STATUS KATEGORI: ${response.statusCode}');
+      print('BODY KATEGORI: ${response.body}');
+      throw Exception('Gagal memuat kategori buku');
+    }
+  }
+
+  static Future<List<BookModel>> fetchBukuByKategori(int kategoriId) async {
+    final token = await getToken();
+    final url = Uri.parse('$baseUrl/BukuKategori/$kategoriId');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final List data = jsonData['data']['data']; // untuk pagination
+      return data.map((item) => BookModel.fromJson(item)).toList();
+    } else {
+      throw Exception('Gagal memuat buku berdasarkan kategori');
+    }
+  }
+
+
+
   // ================================
   // PEMINJAMAN
   // ================================

@@ -32,12 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     BookModel dummyBook = BookModel(
       id: 1,
-      coverUrl: 'assets/the_hobbit.jpg',
+      coverUrl: '',
       categoryId: 'Fantasi',
       title: 'The Hobbit',
       author: 'J.R.R. Tolkien',
       publicationYear: '1937',
       description: 'Petualangan Bilbo Baggins mencari harta naga Smaug.',
+      publisher: 'Allen & Unwin', // << tambahkan ini
     );
 
     // Jangan assign _buildHomeContent() di sini
