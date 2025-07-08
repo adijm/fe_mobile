@@ -1,27 +1,54 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class SavedBooksScreen extends StatelessWidget {
+class SavedBooksScreen extends StatefulWidget {
   const SavedBooksScreen({Key? key}) : super(key: key);
 
-  // Data contoh buku
-  final List<Map<String, String>> books = const [
-    {
-      'title': 'Rahasia Pelangi',
-      'image': 'rahasia_pelangi.jpg',
-    },
-    {
-      'title': 'Aku Belajar Akhlak',
-      'image': 'akhlak.jpg',
-    },
-    {
-      'title': 'Sapiens',
-      'image': 'sapiens.jpg',
-    },
-    {
-      'title': 'The Hobbit',
-      'image': 'the_hobbit.jpg',
-    },
-  ];
+  @override
+  State<SavedBooksScreen> createState() => _SavedBooksScreenState();
+}
+
+class _SavedBooksScreenState extends State<SavedBooksScreen> {
+  List<Map<String, String>> savedBooks = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSavedBooks();
+  }
+
+  Future<void> fetchSavedBooks() async {
+    try {
+      final response = await http.get(Uri.parse('https://yourdomain.com/api/saved_books'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+
+        setState(() {
+          savedBooks = data.map<Map<String, String>>((book) {
+            return {
+              'title': book['title'],
+              'image': book['image'], // Pastikan field image tersedia
+            };
+          }).toList();
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          savedBooks = [];
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Fetch error: $e');
+      setState(() {
+        savedBooks = [];
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,30 +59,37 @@ class SavedBooksScreen extends StatelessWidget {
         backgroundColor: const Color(0xFFB3D7F3),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          itemCount: books.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Dua kolom
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 0.65,
-          ),
-          itemBuilder: (context, index) {
-            return BookCard(
-              title: books[index]['title']!,
-              imagePath: books[index]['image']!,
-            );
-          },
-        ),
-      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : savedBooks.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Belum ada buku yang disimpan.',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                    itemCount: savedBooks.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.7,
+                    ),
+                    itemBuilder: (context, index) {
+                      return BookCard(
+                        title: savedBooks[index]['title']!,
+                        imagePath: 'assets/images/${savedBooks[index]['image']!}',
+                      );
+                    },
+                  ),
+                ),
     );
   }
 }
@@ -72,33 +106,45 @@ class BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            imagePath,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        ),
-        Positioned(
-          top: 8,
-          right: 8,
-          child: Container(
-            width: 20,
-            height: 20,
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(4),
-                bottomLeft: Radius.circular(4),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(2, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+            child: Image.asset(
+              imagePath,
+              height: 150,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                height: 150,
+                color: Colors.grey[300],
+                child: const Center(child: Icon(Icons.broken_image)),
               ),
             ),
           ),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

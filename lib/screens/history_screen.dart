@@ -1,32 +1,52 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
-  final List<HistoryItem> historyItems = const [
-    HistoryItem(
-      dateTime: '04 Juni 2025, 09:31 AM',
-      message: 'Buku “Rahasia Pelangi” telah dikembalikan.',
-    ),
-    HistoryItem(
-      dateTime: '29 Mei 2025, 11:00 AM',
-      message:
-          'Buku “Rahasia Pelangi” telah diambil di perpustakaan Tenggat pengembalian : 5 Juni 2025.',
-    ),
-    HistoryItem(
-      dateTime: '26 Mei 2025, 08:07 AM',
-      message: 'Peminjaman buku “Rahasia Pelangi” disetujui oleh admin',
-    ),
-    HistoryItem(
-      dateTime: '24 Mei 2025, 04:30 PM',
-      message:
-          'Permintaan Peminjaman buku “Rahasia Pelangi” telah diajukan.',
-    ),
-    HistoryItem(
-      dateTime: '24 Mei 2025, 10:31 AM',
-      message: 'Pendaftaran akun berhasil. Selamat datang di perpustakaan !',
-    ),
-  ];
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  List<HistoryItem> historyItems = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchHistory();
+  }
+
+  Future<void> fetchHistory() async {
+    try {
+      final response = await http.get(Uri.parse('https://yourdomain.com/api/history'));
+
+      if (response.statusCode == 200) {
+        final List data = jsonDecode(response.body);
+
+        setState(() {
+          historyItems = data.map((item) => HistoryItem(
+            dateTime: item['date_time'],
+            message: item['message'],
+          )).toList();
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          historyItems = [];
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        historyItems = [];
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,38 +61,47 @@ class HistoryScreen extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: historyItems.length,
-        separatorBuilder: (context, index) => const Divider(
-          height: 32,
-          thickness: 1,
-          color: Color(0xFFDDDDDD),
-        ),
-        itemBuilder: (context, index) {
-          final item = historyItems[index];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.dateTime,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : historyItems.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Belum ada aktivitas.',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: historyItems.length,
+                  separatorBuilder: (context, index) => const Divider(
+                    height: 32,
+                    thickness: 1,
+                    color: Color(0xFFDDDDDD),
+                  ),
+                  itemBuilder: (context, index) {
+                    final item = historyItems[index];
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.dateTime,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          item.message,
+                          style: const TextStyle(
+                            fontSize: 15.5,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                item.message,
-                style: const TextStyle(
-                  fontSize: 15.5,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          );
-        },
-      ),
     );
   }
 }

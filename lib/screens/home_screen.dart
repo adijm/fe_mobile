@@ -6,6 +6,7 @@ import 'library_screen.dart';
 import 'account_screen.dart';
 import 'book_details_page.dart';
 import 'return_kosong.dart';
+import 'notification_bottom_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -25,24 +26,57 @@ class _HomeScreenState extends State<HomeScreen> {
   late int _selectedIndex;
   late List<Widget> _pages;
 
+  TextEditingController _searchController = TextEditingController();
+  String searchKeyword = '';
+  List<Book> allBooks = [];
+  List<Book> filteredBooks = [];
+
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
 
-    Book dummyBook = Book(
-      id: 1,
-      image: 'assets/the_hobbit.jpg',
-      category: 'Fantasi',
-      title: 'The Hobbit',
-      author: 'J.R.R. Tolkien',
-      description: 'Petualangan Bilbo Baggins mencari harta naga Smaug.',
-    );
+    allBooks = [
+      Book(
+        id: 1,
+        image: 'assets/the_hobbit.jpg',
+        category: 'Fantasi',
+        title: 'The Hobbit',
+        author: 'J.R.R. Tolkien',
+        description: 'Petualangan Bilbo Baggins bersama kurcaci mencari harta naga Smaug.',
+      ),
+      Book(
+        id: 2,
+        image: 'assets/perahu_kertas.jpg',
+        category: 'Drama',
+        title: 'Perahu Kertas',
+        author: 'Dee Lestari',
+        description: 'Kisah cinta remaja Kugy dan Keenan.',
+      ),
+      Book(
+        id: 3,
+        image: 'assets/habibie_ainun.jpg',
+        category: 'Biografi',
+        title: 'Habibie & Ainun',
+        author: 'B.J. Habibie',
+        description: 'Kisah cinta sejati Presiden ke-3 RI.',
+      ),
+      Book(
+        id: 4,
+        image: 'assets/planet_luna.jpg',
+        category: 'Fantasi',
+        title: 'Planet Luna',
+        author: 'Ray Antariska Yasmin',
+        description: 'Luna menemukan jati diri lewat dunia imajinasi.',
+      ),
+    ];
+
+    filteredBooks = allBooks;
 
     _pages = [
       _buildHomeContent(),
       const LibraryScreen(),
-      BorrowScreen(book: dummyBook),
+      const BorrowScreen(book: null),
       const ReturnScreen(),
       AccountScreen(username: widget.userName),
     ];
@@ -91,7 +125,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(widget.userName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ],
               ),
-              const Icon(CupertinoIcons.bell, size: 28, color: Colors.green),
+              IconButton(
+                icon: const Icon(CupertinoIcons.bell, size: 28, color: Colors.green),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    builder: (_) => const NotificationBottomSheet(),
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -104,15 +149,24 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(30),
             ),
             child: Row(
-              children: const [
-                Icon(Icons.search, color: Colors.grey),
-                SizedBox(width: 8),
+              children: [
+                const Icon(Icons.search, color: Colors.grey),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
                       hintText: "Search for books",
                       border: InputBorder.none,
                     ),
+                    onChanged: (value) {
+                      setState(() {
+                        searchKeyword = value.toLowerCase();
+                        filteredBooks = allBooks.where((book) {
+                          return book.title.toLowerCase().contains(searchKeyword);
+                        }).toList();
+                      });
+                    },
                   ),
                 ),
               ],
@@ -153,41 +207,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 16),
 
-          _buildBookCard(
-            imagePath: 'assets/the_hobbit.jpg',
-            title: 'The Hobbit',
-            author: 'J.R.R. Tolkien',
-            genre: 'Fantasi, Petualangan',
-            year: '1937',
-            description: 'Petualangan Bilbo Baggins bersama kurcaci mencari harta naga Smaug.',
-          ),
-          const SizedBox(height: 16),
-          _buildBookCard(
-            imagePath: 'assets/perahu_kertas.jpg',
-            title: 'Perahu Kertas',
-            author: 'Dee Lestari',
-            genre: 'Drama, Romansa',
-            year: '2009',
-            description: 'Kisah cinta remaja Kugy dan Keenan.',
-          ),
-          const SizedBox(height: 16),
-          _buildBookCard(
-            imagePath: 'assets/habibie_ainun.jpg',
-            title: 'Habibie & Ainun',
-            author: 'B.J. Habibie',
-            genre: 'Biografi, Romansa',
-            year: '2010',
-            description: 'Kisah cinta sejati Presiden ke-3 RI.',
-          ),
-          const SizedBox(height: 16),
-          _buildBookCard(
-            imagePath: 'assets/planet_luna.jpg',
-            title: 'Planet Luna',
-            author: 'Ray Antariska Yasmin',
-            genre: 'Fantasi, Remaja',
-            year: '2021',
-            description: 'Luna menemukan jati diri lewat dunia imajinasi.',
-          ),
+          ...filteredBooks.map((book) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _buildBookCard(
+              imagePath: book.image,
+              title: book.title,
+              author: book.author,
+              genre: book.category,
+              year: 'Unknown',
+              description: book.description,
+            ),
+          )),
         ],
       ),
     );

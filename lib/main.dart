@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/landing_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Litera App',
-      home: const SplashScreen(),
+      initialRoute: '/splash',
+      routes: {
+        '/splash': (context) => const SplashScreen(),
+        '/login': (context) => const LandingScreen(),
+        '/home': (context) => const HomeScreen(userName: 'Guest'),
+      },
     );
   }
 }
@@ -68,12 +74,9 @@ class _SplashScreenState extends State<SplashScreen>
       }
     });
 
-    // Tampilkan splash selama 6 detik sebelum navigasi ke landing screen
+    // Tampilkan splash selama 5 detik sebelum navigasi ke landing screen
     Future.delayed(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LandingScreen()),
-      );
+      Navigator.pushReplacementNamed(context, '/login');
     });
   }
 

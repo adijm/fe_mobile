@@ -15,13 +15,13 @@ class LogoutDialog extends StatelessWidget {
       actions: [
         ElevatedButton(
           onPressed: () {
-            Navigator.of(context).pop(true); // Confirm logout
+            Navigator.of(context).pop(true); // User memilih logout
           },
           child: const Text("Yes, Log Out"),
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(false); // Cancel
+            Navigator.of(context).pop(false); // Batal logout
           },
           child: const Text("Cancel", style: TextStyle(color: Colors.red)),
         )
