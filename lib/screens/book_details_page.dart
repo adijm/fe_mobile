@@ -11,64 +11,63 @@ class BookDetailsPage extends StatelessWidget {
   final String description;
 
   const BookDetailsPage({
-    Key? key,
     required this.imagePath,
     required this.title,
     required this.author,
     required this.genre,
     required this.year,
     required this.description,
-  }) : super(key: key);
+    super.key,
+  });
 
-  void _showBorrowDialog(BuildContext context, Book book) {
+  void _showBorrowDialog(BuildContext context, BookModel book) {
     showDialog(
       context: context,
-      builder:
-          (context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Are you sure you want to borrow this book?',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context); // close dialog
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => BorrowScreen(book: book),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text("Yes, Borrow book"),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      "Cancel",
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                ],
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Are you sure you want to borrow this book?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
               ),
-            ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BorrowScreen(book: book),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: const Text("Yes, Borrow book"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
@@ -76,7 +75,7 @@ class BookDetailsPage extends StatelessWidget {
     return Column(
       children: [
         Text(
-          value,
+          value.isNotEmpty ? value : '-',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 4),
@@ -87,13 +86,15 @@ class BookDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final book = Book(
+    final book = BookModel(
       id: 0,
-      image: imagePath,
-      category: genre,
       title: title,
       author: author,
+      categoryId: genre,
+      publicationYear: year,
       description: description,
+      publisher: '',
+      coverUrl: imagePath,
     );
 
     return Scaffold(
@@ -133,10 +134,12 @@ class BookDetailsPage extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        imagePath,
+                      child: Image.network(
+                        imagePath.isNotEmpty ? imagePath : 'https://via.placeholder.com/150',
                         height: 220,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.broken_image),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -148,18 +151,9 @@ class BookDetailsPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(author, style: const TextStyle(color: Colors.grey)),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        return Icon(
-                          Icons.star,
-                          size: 24,
-                          color:
-                              index < 3 ? Colors.amber : Colors.grey.shade300,
-                        );
-                      }),
+                    Text(
+                      author,
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
                     Row(

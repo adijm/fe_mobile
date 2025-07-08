@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'models/book_model.dart';
 
 class BorrowScreen extends StatelessWidget {
-  final Book? book;
+  final BookModel? book;
   final String status;
 
   const BorrowScreen({Key? key, required this.book, this.status = "Menunggu Persetujuan"}) : super(key: key);
@@ -79,7 +79,7 @@ class EmptyBorrowState extends StatelessWidget {
 }
 
 class BorrowBookCard extends StatelessWidget {
-  final Book book;
+  final BookModel book;
   final String status;
   const BorrowBookCard({Key? key, required this.book, required this.status}) : super(key: key);
 
@@ -122,7 +122,7 @@ class BorrowBookCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: Image.asset(
-              book.image,
+              book.coverUrl ?? '',
               width: 80,
               height: 120,
               fit: BoxFit.cover,

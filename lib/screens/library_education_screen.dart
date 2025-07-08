@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'library_child_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_fiction_screen.dart';
+<<<<<<< HEAD
 import 'home_screen.dart';
 import 'book_details_page.dart'; 
+=======
+import 'book_details_page.dart';
+
+>>>>>>> 153ef05725aa6a57bb07fa47fc7814b26d97626f
 class LibraryEducationScreen extends StatelessWidget {
   const LibraryEducationScreen({super.key});
 
@@ -65,6 +70,11 @@ class LibraryEducationScreen extends StatelessWidget {
                 ),
               ),
             ),
+<<<<<<< HEAD
+=======
+
+            // Kategori Navigasi
+>>>>>>> 153ef05725aa6a57bb07fa47fc7814b26d97626f
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -95,6 +105,7 @@ class LibraryEducationScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+<<<<<<< HEAD
                             builder:
                                 (_) => BookDetailsPage(
                                   imagePath: book['image']!,
@@ -104,6 +115,16 @@ class LibraryEducationScreen extends StatelessWidget {
                                   year: book['year']!,
                                   description: book['description']!,
                                 ),
+=======
+                            builder: (_) => BookDetailsPage(
+                              imagePath: book['image']!,
+                              title: book['title']!,
+                              author: book['author']!,
+                              genre: book['category']!,
+                              year: '',           // kosong karena tidak ada datanya
+                              description: '',    // kosong karena tidak ada datanya
+                            ),
+>>>>>>> 153ef05725aa6a57bb07fa47fc7814b26d97626f
                           ),
                         );
                       },
@@ -117,6 +138,14 @@ class LibraryEducationScreen extends StatelessWidget {
                               width: 90,
                               height: 120,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 90,
+                                  height: 120,
+                                  color: Colors.grey.shade300,
+                                  child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                                );
+                              },
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -165,6 +194,10 @@ class LibraryEducationScreen extends StatelessWidget {
           ],
         ),
       ),
+<<<<<<< HEAD
+=======
+
+>>>>>>> 153ef05725aa6a57bb07fa47fc7814b26d97626f
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         type: BottomNavigationBarType.fixed,
@@ -227,6 +260,25 @@ class LibraryEducationScreen extends StatelessWidget {
 
     return InkWell(
       onTap: () {
+<<<<<<< HEAD
+=======
+        Widget targetScreen;
+        switch (label) {
+          case 'Child':
+            targetScreen = const LibraryChildScreen();
+            break;
+          case 'Humanities':
+            targetScreen = const LibraryHumanitiesScreen();
+            break;
+          case 'Fiction':
+            targetScreen = const LibraryFictionScreen();
+            break;
+          case 'Education':
+          default:
+            targetScreen = const LibraryEducationScreen();
+        }
+
+>>>>>>> 153ef05725aa6a57bb07fa47fc7814b26d97626f
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => targetScreen),
