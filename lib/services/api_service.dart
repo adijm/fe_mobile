@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://127.0.0.1:8000/api';
+  static const String baseUrl = 'http://192.168.1.3:8000/api';
 
   // ================================
   // AUTH
@@ -116,34 +116,37 @@ class ApiService {
   // KATEGORI BUKU
   // ================================
 
-  static Future<List<Map<String, dynamic>>> fetchKategoriBuku() async {
-    final token = await getToken();
-    final url = Uri.parse('$baseUrl/kategori');
+static Future<List<Map<String, dynamic>>> fetchKategoriBuku() async {
+  final token = await getToken();
+  final url = Uri.parse('$baseUrl/kategori'); // ✅ GANTI DENGAN ENDPOINT YANG BENAR
 
-    final response = await http.get(
-      url,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+  final response = await http.get(
+    url,
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      final List kategori = jsonData['data'];
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    
+    // Ambil list dari key 'data'
+    final List kategori = jsonData['data'];
 
-      return kategori.map<Map<String, dynamic>>((item) {
-        return {
-          'id': item['id'],
-          'nama': item['nama'],
-        };
-      }).toList();
-    } else {
-      print('STATUS KATEGORI: ${response.statusCode}');
-      print('BODY KATEGORI: ${response.body}');
-      throw Exception('Gagal memuat kategori buku');
-    }
+    return kategori.map<Map<String, dynamic>>((item) {
+      return {
+        'id': item['id'],
+        'nama': item['name'] ?? 'Tanpa Nama',
+      };
+    }).toList();
+  } else {
+    print('STATUS KATEGORI: ${response.statusCode}');
+    print('BODY KATEGORI: ${response.body}');
+    throw Exception('Gagal memuat kategori buku');
   }
+}
+
 
   static Future<List<BookModel>> fetchBukuByKategori(int kategoriId) async {
     final token = await getToken();
