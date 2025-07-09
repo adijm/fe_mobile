@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:forumapp/screens/models/book_model.dart';
 import 'borrow_screen.dart';
@@ -28,22 +29,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ));
     _loadRecommendedBooks();
-
-    BookModel dummyBook = BookModel(
-      id: 1,
-      coverUrl: '',
-      categoryId: 'Fantasi',
-      title: 'The Hobbit',
-      author: 'J.R.R. Tolkien',
-      publicationYear: '1937',
-      description: 'Petualangan Bilbo Baggins mencari harta naga Smaug.',
-      publisher: 'Allen & Unwin', // << tambahkan ini
-    );
-
-    // Jangan assign _buildHomeContent() di sini
     _pages = [
-      Container(), // placeholder dulu
+      Container(),
       const LibraryScreen(),
       BorrowScreen(),
       const ReturnScreen(),
@@ -54,14 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadRecommendedBooks() async {
     try {
       final books = await ApiService.fetchBukuTerbaru();
-      print("DATA BUKU YANG DITERIMA: ${books.map((b) => b.title).toList()}");
-
       setState(() {
         _recommendedBooks = books;
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching books: $e');
       setState(() {
         _isLoading = false;
       });
@@ -71,293 +60,263 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child:
-            _selectedIndex == 0
-                ? _buildHomeContent() // <-- panggil ulang setiap kali build
-                : _pages[_selectedIndex],
+      // Ganti background jadi gradient lembut
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFB4D9F8), Color(0xFFFFFFFF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child:
+              _selectedIndex == 0 ? _buildHomeContent() : _pages[_selectedIndex],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+        onTap: (i) => setState(() => _selectedIndex = i),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.library_books),
-            label: 'Library',
-          ),
+              icon: Icon(Icons.library_books), label: 'Library'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_turned_in),
-            label: 'Return',
-          ),
+              icon: Icon(Icons.assignment_turned_in), label: 'Return'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
-          ),
+              icon: Icon(Icons.account_circle), label: 'Account'),
         ],
       ),
     );
   }
 
   Widget _buildHomeContent() {
-    final filteredBooks =
-        _recommendedBooks.where((book) {
-          return book.title.toLowerCase().contains(_searchTerm.toLowerCase());
-        }).toList();
+    final filteredBooks = _recommendedBooks.where((book) {
+      return book.title.toLowerCase().contains(_searchTerm.toLowerCase());
+    }).toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // Greeting dengan stylized card
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2)),
+            ],
+          ),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Hello,",
-                    style: TextStyle(fontSize: 20, color: Colors.black87),
-                  ),
-                  Text(
-                    widget.userName,
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text("Hello,",
+                    style: TextStyle(fontSize: 20, color: Colors.black54)),
+                Text(widget.userName,
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const Icon(CupertinoIcons.bell, size: 28, color: Colors.green),
+                        fontSize: 22, fontWeight: FontWeight.bold)),
+              ]),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child:
+                      Icon(CupertinoIcons.bell, size: 28, color: Colors.green),
+                ),
+              )
             ],
           ),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.search, color: Colors.grey),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchTerm = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: "Search for books",
-                      border: InputBorder.none,
-                    ),
-                  ),
+        ),
+        const SizedBox(height: 20),
+
+        // Search bar dengan elevasi
+        Material(
+          elevation: 4,
+          borderRadius: BorderRadius.circular(30),
+          child: Container(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration:
+                BoxDecoration(borderRadius: BorderRadius.circular(30)),
+            child: Row(children: [
+              const Icon(Icons.search, color: Colors.grey),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (v) => setState(() => _searchTerm = v),
+                  decoration: const InputDecoration(
+                      hintText: "Search for books", border: InputBorder.none),
                 ),
-              ],
-            ),
+              )
+            ]),
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () => setState(() => _selectedIndex = 2),
-                child: _buildStatCard("📚", "0 Buku", "Sedang dipinjam"),
-              ),
-              GestureDetector(
-                onTap: () => setState(() => _selectedIndex = 2),
-                child: _buildStatCardIcon(
-                  Icons.check_circle,
-                  Colors.blue,
-                  "0 Buku",
-                  "Sudah dikembalikan",
-                ),
-              ),
-              GestureDetector(
-                onTap: () => setState(() => _selectedIndex = 2),
-                child: _buildStatCard("📖", "0", "Total pinjaman"),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "RECOMMEND",
+        ),
+        const SizedBox(height: 20),
+
+        // Stat cards dengan icon besar
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildStatCardFancy(
+                icon: Icons.book,
+                label: "Sedang Dipinjam",
+                value: "0",
+                bgColor: Colors.green),
+            _buildStatCardFancy(
+                icon: Icons.check_circle_outline,
+                label: "Sudah Dikembalikan",
+                value: "0",
+                bgColor: Colors.blue),
+            _buildStatCardFancy(
+                icon: Icons.history,
+                label: "Total Pinjaman",
+                value: "0",
+                bgColor: Colors.orange),
+          ],
+        ),
+        const SizedBox(height: 30),
+
+        // Section NEW BOOKS
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("NEW BOOKS",
                 style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    letterSpacing: 1.2,
+                    color: Colors.black87)),
+            GestureDetector(
+              onTap: () => setState(() => _selectedIndex = 1),
+              child: const Text("See all >",
+                  style: TextStyle(
+                      color: Colors.green, fontWeight: FontWeight.w500)),
+            )
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Daftar buku vertikal
+        _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : filteredBooks.isEmpty
+                ? const Text("Tidak ada buku terbaru.",
+                    style: TextStyle(color: Colors.black54))
+                : ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: filteredBooks.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (ctx, i) =>
+                        _buildVerticalBookCard(filteredBooks[i]),
+                  ),
+      ]),
+    );
+  }
+
+  Widget _buildStatCardFancy({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color bgColor,
+  }) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: bgColor.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Icon(icon, size: 30, color: bgColor),
+          const SizedBox(height: 8),
+          Text(value,
+              style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              GestureDetector(
-                onTap: () => setState(() => _selectedIndex = 1),
-                child: const Text(
-                  "See all >",
-                  style: TextStyle(color: Colors.green),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : filteredBooks.isEmpty
-              ? const Text("Tidak ada buku yang cocok.")
-              : Column(
-                children:
-                    filteredBooks
-                        .map((book) => _buildBookCardFromAPI(book))
-                        .toList(),
-              ),
-        ],
-      ),
-    );
-  }
-
-  static Widget _buildStatCard(String emoji, String value, String label) {
-    return Container(
-      width: 100,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F7FA),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(1, 2)),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 24)),
+                  fontSize: 16,
+                  color: bgColor)),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12),
-          ),
-        ],
+          Text(label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, color: Colors.black54)),
+        ]),
       ),
     );
   }
 
-  static Widget _buildStatCardIcon(
-    IconData icon,
-    Color color,
-    String value,
-    String label,
-  ) {
-    return Container(
-      width: 100,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F7FA),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(1, 2)),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, size: 24, color: color),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBookCardFromAPI(dynamic book) {
+  Widget _buildVerticalBookCard(dynamic book) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => BookDetailsPage(book: book)),
-        );
+            context,
+            MaterialPageRoute(
+                builder: (_) => BookDetailsPage(book: book)));
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[300]!),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2))
+          ],
         ),
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                book.coverUrl,
+        child: Row(children: [
+          ClipRRect(
+            borderRadius:
+                const BorderRadius.horizontal(left: Radius.circular(12)),
+            child: Image.network(book.coverUrl,
                 width: 70,
                 height: 100,
                 fit: BoxFit.cover,
-                errorBuilder:
-                    (context, error, stackTrace) => Container(
+                errorBuilder: (_, __, ___) => Container(
                       width: 70,
                       height: 100,
                       color: Colors.grey[300],
                       child: const Icon(Icons.broken_image),
-                    ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
+                    )),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    book.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    book.author,
-                    style: const TextStyle(fontSize: 14, color: Colors.black54),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "📖 Penerbit: ${book.publisher}",
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                  Text(
-                    "📅 Tahun Terbit: ${book.publicationYear}",
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                  const SizedBox(height: 8),
-                  // Text("📖 Deskripsi:\n${book.description}, style: const TextStyle(fontSize: 13)),
-                ],
-              ),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(book.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.black87)),
+                    const SizedBox(height: 4),
+                    Text(book.author,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.black54)),
+                  ]),
             ),
-          ],
-        ),
+          )
+        ]),
       ),
     );
   }

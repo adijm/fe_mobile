@@ -11,72 +11,96 @@ class BookDetailsPage extends StatelessWidget {
   void _showBorrowDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false, // agar tidak bisa ditutup manual saat loading
-      builder:
-          (dialogContext) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        content: const Text(
+          'Are you sure you want to borrow this book?',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text(
+              "Cancel",
+              style: TextStyle(color: Colors.red),
             ),
-            content: const Text(
-              'Are you sure you want to borrow this book?',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text(
-                  "Cancel",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(dialogContext).pop(); // Tutup dialog konfirmasi
-
-                  // ✅ Tampilkan loading indicator
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder:
-                        (_) => const Center(child: CircularProgressIndicator()),
-                  );
-
-                  try {
-                    await ApiService.borrowBook(bukuId: book.id, jumlah: 1);
-
-                    // ✅ Tutup loading
-                    Navigator.of(context, rootNavigator: true).pop();
-
-                    // ✅ Navigasi ke BorrowScreen
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const BorrowScreen()),
-                    );
-                  } catch (e) {
-                    Navigator.of(
-                      context,
-                      rootNavigator: true,
-                    ).pop(); // Tutup loading
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Gagal meminjam buku: $e")),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 20,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text("Yes, Borrow"),
-              ),
-            ],
           ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(child: CircularProgressIndicator()),
+              );
+
+              try {
+                await ApiService.borrowBook(bukuId: book.id, jumlah: 1);
+                Navigator.of(context, rootNavigator: true).pop();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const BorrowScreen()),
+                );
+              } catch (e) {
+                Navigator.of(context, rootNavigator: true).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Gagal meminjam buku: $e")),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              padding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 20,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text("Yes, Borrow"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoBox(String label, String value) {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black54,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -85,20 +109,22 @@ class BookDetailsPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
+          // Header
           Container(
-            color: Colors.green,
-            padding: const EdgeInsets.only(top: 40, left: 8),
+            color: const Color(0xFFB4D9F8),
+            padding: const EdgeInsets.only(top: 40, left: 8, bottom: 12),
             width: double.infinity,
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back, color: Colors.black87),
                   onPressed: () => Navigator.pop(context),
                 ),
+                const SizedBox(width: 4),
                 const Text(
                   "Book Details",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black87,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -106,6 +132,7 @@ class BookDetailsPage extends StatelessWidget {
               ],
             ),
           ),
+
           Expanded(
             child: Container(
               width: double.infinity,
@@ -117,6 +144,7 @@ class BookDetailsPage extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    // Foto buku
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
@@ -125,31 +153,75 @@ class BookDetailsPage extends StatelessWidget {
                             : 'https://via.placeholder.com/150',
                         height: 220,
                         fit: BoxFit.cover,
-                        errorBuilder:
-                            (_, __, ___) =>
-                                const Icon(Icons.broken_image, size: 80),
+                        errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.broken_image, size: 80),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      book.title,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+
+                    // Judul & Penulis Center
+                    Column(
+                      children: [
+                        Text(
+                          book.title,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          book.author,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Kotak info (halaman, tahun, dll)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _infoBox("Copies", book.stock.toString()),
+                        _infoBox("Pages", book.pageCount.toString()),
+                        _infoBox("Year", book.publicationYear),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Deskripsi
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Deskripsi",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black87),
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      book.author,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                     Text(
                       book.description,
                       textAlign: TextAlign.justify,
-                      style: const TextStyle(fontSize: 14, height: 1.5),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        color: Colors.black87,
+                      ),
                     ),
+
                     const SizedBox(height: 30),
+
+                    // Tombol Borrow biru full width
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -163,7 +235,7 @@ class BookDetailsPage extends StatelessWidget {
                         ),
                         child: const Text(
                           "Borrow",
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ),

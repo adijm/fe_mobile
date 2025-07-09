@@ -8,6 +8,10 @@ class BookModel {
   final String description;
   final String coverUrl;
 
+  // ✅ Tambahan field
+  final int stock;
+  final int pageCount;
+
   BookModel({
     required this.id,
     required this.title,
@@ -17,6 +21,8 @@ class BookModel {
     required this.categoryId,
     required this.description,
     required this.coverUrl,
+    required this.stock,
+    required this.pageCount,
   });
 
   factory BookModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +35,10 @@ class BookModel {
       categoryId: json['category_id']?.toString() ?? 'Unknown Category',
       description: json['description'] ?? 'No description available.',
       coverUrl: json['cover_url'] ?? '',
+
+      // ✅ Parsing tambahan
+      stock: json['stock'] ?? 0,
+      pageCount: json['page_count'] ?? 0,
     );
   }
 }

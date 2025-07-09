@@ -22,7 +22,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void _fetchKategori() async {
     try {
       final kategori = await ApiService.fetchKategoriBuku();
-      if (!mounted) return; // ✅ Tambahkan ini
+      if (!mounted) return;
       setState(() {
         _kategoriList = kategori;
         _selectedKategoriId = kategori.isNotEmpty ? kategori[0]['id'] : null;
@@ -39,7 +39,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void _fetchBooksByKategori(int kategoriId) async {
     try {
       final books = await ApiService.fetchBukuByKategori(kategoriId);
-      if (!mounted) return; // ✅ Tambahkan ini
+      if (!mounted) return;
       setState(() {
         _books = books;
         _loading = false;
@@ -53,7 +53,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void _fetchBooks() async {
     try {
       final books = await ApiService.fetchBukuTerbaru();
-      if (!mounted) return; // ✅ Tambahkan ini
+      if (!mounted) return;
       setState(() {
         _books = books;
         _loading = false;
@@ -89,6 +89,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Text(
@@ -101,52 +102,44 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
             ),
 
-            // ✅ Tambahkan di sini bagian kategori yang kamu buat
+            // Kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children:
-                      _kategoriList.map((kategori) {
-                        final isSelected =
-                            kategori['id'] == _selectedKategoriId;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: GestureDetector(
-                            onTap: () => _fetchBooksByKategori(kategori['id']),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color:
-                                    isSelected
-                                        ? Colors.white
-                                        : Colors.transparent,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                kategori['nama'],
-                                style: TextStyle(
-                                  color:
-                                      isSelected ? Colors.blue : Colors.black,
-                                  fontWeight:
-                                      isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                ),
-                              ),
+                  children: _kategoriList.map((kategori) {
+                    final isSelected = kategori['id'] == _selectedKategoriId;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: GestureDetector(
+                        onTap: () => _fetchBooksByKategori(kategori['id']),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.white : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            kategori['nama'],
+                            style: TextStyle(
+                              color: isSelected ? Colors.blue : Colors.black,
+                              fontWeight:
+                                  isSelected ? FontWeight.bold : FontWeight.normal,
                             ),
                           ),
-                        );
-                      }).toList(),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
             ),
 
-            // ✅ Search bar
+            // Search bar
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
@@ -174,162 +167,105 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
             ),
 
-            // ✅ Book list
+            // Daftar buku
             Expanded(
               child: Container(
+                width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
-                child:
-                    _loading
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView(
-                          padding: const EdgeInsets.all(16),
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const [
-                                Text(
-                                  'New Collection',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: filteredBooks.length,
+                        itemBuilder: (context, index) {
+                          final book = filteredBooks[index];
+                          final validCover = book.coverUrl.isNotEmpty;
+
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BookDetailsPage(book: book),
                                 ),
-                                Icon(Icons.more_vert),
-                              ],
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF7F4F5),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  // Cover buku
+                                  Container(
+                                    width: 100,
+                                    height: 130,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.horizontal(
+                                        left: Radius.circular(16),
+                                      ),
+                                      image: validCover
+                                          ? DecorationImage(
+                                              image: NetworkImage(book.coverUrl),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                      color: validCover ? null : Colors.grey[300],
+                                    ),
+                                    child: !validCover
+                                        ? const Center(
+                                            child: Icon(Icons.broken_image, size: 40),
+                                          )
+                                        : null,
+                                  ),
+                                  // Info buku
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            book.title,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            book.author,
+                                            style: const TextStyle(color: Colors.grey),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            "Stock: ${book.stock} copies",
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
-                            const SizedBox(height: 12),
-                            _buildBookList(filteredBooks, isSimple: false),
-                          ],
-                        ),
+                          );
+                        },
+                      ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryTab(
-    BuildContext context, {
-    required String label,
-    required Widget destination,
-  }) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => destination));
-      },
-      child: Text(
-        label,
-        style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  Widget _buildBookList(List<BookModel> books, {required bool isSimple}) {
-    return SizedBox(
-      height: isSimple ? 200 : 240,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: books.length,
-        itemBuilder: (context, index) {
-          final book = books[index];
-          final validCoverUrl = book.coverUrl.isNotEmpty;
-
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => BookDetailsPage(book: book)),
-              );
-            },
-            child: Container(
-              width: 150,
-              margin: const EdgeInsets.only(right: 16),
-              decoration: BoxDecoration(
-                color: isSimple ? Colors.grey[300] : const Color(0xFFF7F4F5),
-                borderRadius: BorderRadius.circular(20),
-                image:
-                    isSimple && validCoverUrl
-                        ? DecorationImage(
-                          image: NetworkImage(book.coverUrl!),
-                          fit: BoxFit.cover,
-                        )
-                        : null,
-              ),
-              child:
-                  !isSimple
-                      ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 120,
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(20),
-                              ),
-                              image:
-                                  validCoverUrl
-                                      ? DecorationImage(
-                                        image: NetworkImage(book.coverUrl),
-                                        fit: BoxFit.cover,
-                                      )
-                                      : null,
-                              color: validCoverUrl ? null : Colors.grey[300],
-                            ),
-                            child:
-                                !validCoverUrl
-                                    ? const Center(
-                                      child: Icon(
-                                        Icons.broken_image,
-                                        size: 40,
-                                        color: Colors.grey,
-                                      ),
-                                    )
-                                    : null,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  book.categoryId.isNotEmpty
-                                      ? book.categoryId
-                                      : 'Unknown Category',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                Text(
-                                  book.title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  "Remaining: 12 copies",
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                      : null,
-            ),
-          );
-        },
       ),
     );
   }
