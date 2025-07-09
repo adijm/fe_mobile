@@ -273,5 +273,25 @@ class ApiService {
       };
     }
   }
+static Future<List<BookModel>> searchBooks(String query) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/search'),
+    headers: {
+      'Accept': 'application/json',
+    },
+    body: {'query': query},
+  );
+
+  print('STATUS: ${response.statusCode}');
+  print('BODY: ${response.body}'); //
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.body);
+    final List<dynamic> booksJson = jsonResponse['data']['data'];
+    return booksJson.map((item) => BookModel.fromJson(item)).toList();
+  } else {
+    throw Exception('Gagal mencari buku');
+  }
+}
+
 }
 

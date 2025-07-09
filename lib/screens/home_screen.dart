@@ -6,8 +6,9 @@ import 'borrow_screen.dart';
 import 'library_screen.dart';
 import 'account_screen.dart';
 import 'book_details_page.dart';
-import 'return_kosong.dart';
 import '../services/api_service.dart';
+import 'return_screen.dart';
+import 'return_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.userName});
@@ -21,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   late List<Widget> _pages;
 
-  final TextEditingController _searchController = TextEditingController();
+  TextEditingController _searchController = TextEditingController();
   List<dynamic> _recommendedBooks = [];
   bool _isLoading = true;
   String _searchTerm = '';
@@ -34,13 +35,38 @@ class _HomeScreenState extends State<HomeScreen> {
       statusBarIconBrightness: Brightness.dark,
     ));
     _loadRecommendedBooks();
+
     _pages = [
       Container(),
       const LibraryScreen(),
       BorrowScreen(),
-      const ReturnScreen(),
+      const ReturnListScreen(),
       AccountScreen(username: widget.userName),
     ];
+  }
+
+  Future<void> _searchBooksFromAPI(String keyword) async {
+    if (keyword.isEmpty) {
+      _loadRecommendedBooks();
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await ApiService.searchBooks(keyword);
+      setState(() {
+        _recommendedBooks = result;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error search: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _loadRecommendedBooks() async {
@@ -60,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Ganti background jadi gradient lembut
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -70,8 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: SafeArea(
-          child:
-              _selectedIndex == 0 ? _buildHomeContent() : _pages[_selectedIndex],
+          child: _selectedIndex == 0
+              ? _buildHomeContent()
+              : _pages[_selectedIndex],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -101,129 +127,136 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Greeting dengan stylized card
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 6,
-                  offset: const Offset(0, 2)),
-            ],
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Hello,",
+                        style:
+                            TextStyle(fontSize: 20, color: Colors.black54)),
+                    Text(widget.userName,
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(CupertinoIcons.bell,
+                        size: 28, color: Colors.green),
+                  ),
+                )
+              ],
+            ),
           ),
-          child: Row(
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.search, color: Colors.grey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchTerm = value;
+                      });
+                      _searchBooksFromAPI(value);
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "Search for books",
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text("Hello,",
-                    style: TextStyle(fontSize: 20, color: Colors.black54)),
-                Text(widget.userName,
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold)),
-              ]),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child:
-                      Icon(CupertinoIcons.bell, size: 28, color: Colors.green),
-                ),
-              )
+              _buildStatCardFancy(
+                  icon: Icons.book,
+                  label: "Sedang Dipinjam",
+                  value: "0",
+                  bgColor: Colors.green),
+              _buildStatCardFancy(
+                  icon: Icons.check_circle_outline,
+                  label: "Sudah Dikembalikan",
+                  value: "0",
+                  bgColor: Colors.blue),
+              _buildStatCardFancy(
+                  icon: Icons.history,
+                  label: "Total Pinjaman",
+                  value: "0",
+                  bgColor: Colors.orange),
             ],
           ),
-        ),
-        const SizedBox(height: 20),
-
-        // Search bar dengan elevasi
-        Material(
-          elevation: 4,
-          borderRadius: BorderRadius.circular(30),
-          child: Container(
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration:
-                BoxDecoration(borderRadius: BorderRadius.circular(30)),
-            child: Row(children: [
-              const Icon(Icons.search, color: Colors.grey),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (v) => setState(() => _searchTerm = v),
-                  decoration: const InputDecoration(
-                      hintText: "Search for books", border: InputBorder.none),
-                ),
-              )
-            ]),
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        // Stat cards dengan icon besar
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildStatCardFancy(
-                icon: Icons.book,
-                label: "Sedang Dipinjam",
-                value: "0",
-                bgColor: Colors.green),
-            _buildStatCardFancy(
-                icon: Icons.check_circle_outline,
-                label: "Sudah Dikembalikan",
-                value: "0",
-                bgColor: Colors.blue),
-            _buildStatCardFancy(
-                icon: Icons.history,
-                label: "Total Pinjaman",
-                value: "0",
-                bgColor: Colors.orange),
-          ],
-        ),
-        const SizedBox(height: 30),
-
-        // Section NEW BOOKS
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("NEW BOOKS",
+          const SizedBox(height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "NEW BOOKS",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                     letterSpacing: 1.2,
-                    color: Colors.black87)),
-            GestureDetector(
-              onTap: () => setState(() => _selectedIndex = 1),
-              child: const Text("See all >",
-                  style: TextStyle(
-                      color: Colors.green, fontWeight: FontWeight.w500)),
-            )
-          ],
-        ),
-        const SizedBox(height: 16),
-
-        // Daftar buku vertikal
-        _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : filteredBooks.isEmpty
-                ? const Text("Tidak ada buku terbaru.",
-                    style: TextStyle(color: Colors.black54))
-                : ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: filteredBooks.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (ctx, i) =>
-                        _buildVerticalBookCard(filteredBooks[i]),
-                  ),
-      ]),
+                    color: Colors.black87),
+              ),
+              GestureDetector(
+                onTap: () => setState(() => _selectedIndex = 1),
+                child: const Text("See all >",
+                    style: TextStyle(
+                        color: Colors.green, fontWeight: FontWeight.w500)),
+              )
+            ],
+          ),
+          const SizedBox(height: 16),
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : filteredBooks.isEmpty
+                  ? const Text("Tidak ada buku terbaru.",
+                      style: TextStyle(color: Colors.black54))
+                  : ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: filteredBooks.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (ctx, i) =>
+                          _buildVerticalBookCard(filteredBooks[i]),
+                    ),
+        ],
+      ),
     );
   }
 
@@ -241,19 +274,26 @@ class _HomeScreenState extends State<HomeScreen> {
           color: bgColor.withOpacity(0.2),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 30, color: bgColor),
-          const SizedBox(height: 8),
-          Text(value,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 30, color: bgColor),
+            const SizedBox(height: 8),
+            Text(
+              value,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: bgColor)),
-          const SizedBox(height: 4),
-          Text(label,
+                  color: bgColor),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12, color: Colors.black54)),
-        ]),
+              style: const TextStyle(fontSize: 12, color: Colors.black87),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -285,37 +325,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 70,
                 height: 100,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                      width: 70,
-                      height: 100,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.broken_image),
-                    )),
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 70,
+                    height: 100,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.broken_image),
+                  );
+                }),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Expanded(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(book.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Colors.black87)),
-                    const SizedBox(height: 4),
-                    Text(book.author,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.black54)),
-                  ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(book.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black87)),
+                const SizedBox(height: 4),
+                Text(book.author,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.black54)),
+              ],
             ),
-          )
+          ),
         ]),
       ),
     );
