@@ -1,22 +1,78 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
-class ReturnScreen extends StatelessWidget {
-  const ReturnScreen({super.key});
+class ReturnScreen extends StatefulWidget {
+  final Map<String, dynamic> peminjaman;
+
+  const ReturnScreen({super.key, required this.peminjaman});
+
+  @override
+  State<ReturnScreen> createState() => _ReturnScreenState();
+}
+
+class _ReturnScreenState extends State<ReturnScreen> {
+  int denda = 0;
+  late String status;
+
+  @override
+  void initState() {
+    super.initState();
+    status = widget.peminjaman['status'] ?? 'dipinjam';
+  }
+
+  Future<void> _kembalikanBuku() async {
+    final result = await ApiService.returnBook(widget.peminjaman['id']);
+    if (result['success']) {
+      setState(() {
+        denda = result['denda'] ?? 0;
+        status = result['status'] ?? 'dikembalikan';
+      });
+
+      showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: const Text('Berhasil'),
+              content: Text(
+                'Buku berhasil dikembalikan.\nDenda: Rp $denda',
+                style: TextStyle(
+                  color: denda > 0 ? Colors.red : Colors.green[800],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Gagal mengembalikan buku')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final peminjaman = widget.peminjaman;
+    final judul = peminjaman['judul'] ?? 'Tanpa Judul';
+    final penulis = peminjaman['penulis'] ?? 'Tidak diketahui';
+    final tanggalPinjam = peminjaman['tanggal_pinjam'] ?? '-';
+    final tenggat = peminjaman['tenggat'] ?? '-';
+    final imageUrl = 'http://127.0.0.1:8000/storage/${peminjaman['cover']}';
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text('Return'),
         centerTitle: true,
-        backgroundColor: const Color(0xFFB3D9F5), // Warna biru muda
+        backgroundColor: const Color(0xFFB3D9F5),
         elevation: 0,
       ),
       body: Padding(
@@ -30,9 +86,16 @@ class ReturnScreen extends StatelessWidget {
               height: 130,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/rahasia_pelangi.jpg'),
+                color: Colors.grey[200],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  imageUrl,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(child: Icon(Icons.image_not_supported));
+                  },
                 ),
               ),
             ),
@@ -51,25 +114,58 @@ class ReturnScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  detailText('Judul', 'Rahasia Pelangi'),
-                  detailText('Penulis', 'Riawani Elyta & Shabrina Ws'),
-                  iconTextRow(Icons.access_time, 'Periode Pinjam : 12 Hari'),
-                  iconTextRow(Icons.date_range, 'Tanggal Pinjam : 24 Mei 2025'),
-                  iconTextRow(Icons.calendar_today, 'Tanggal kembali : 5 Juni 2025'),
+                  detailText('Judul', judul),
+                  detailText('Penulis', penulis),
+                  iconTextRow(Icons.access_time, 'Periode Pinjam: -'),
+                  iconTextRow(
+                    Icons.date_range,
+                    'Tanggal Pinjam: $tanggalPinjam',
+                  ),
+                  iconTextRow(Icons.calendar_today, 'Tenggat: $tenggat'),
+                  const SizedBox(height: 6),
                   Row(
-                    children: const [
-                      Icon(Icons.circle, size: 12, color: Colors.orange),
-                      SizedBox(width: 4),
+                    children: [
+                      const Icon(Icons.circle, size: 12, color: Colors.orange),
+                      const SizedBox(width: 4),
                       Text(
-                        'Status : Sedang Dipinjam',
-                        style: TextStyle(fontSize: 13),
+                        'Status: $status',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color:
+                              status == 'terlambat'
+                                  ? Colors.red
+                                  : status == 'dikembalikan'
+                                  ? Colors.green
+                                  : Colors.orange,
+                        ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 6),
+                  if (denda > 0)
+                    Text(
+                      'Denda: Rp $denda',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: _kembalikanBuku,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+          child: const Text('Kembalikan Buku'),
         ),
       ),
     );
@@ -101,12 +197,7 @@ class ReturnScreen extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: Colors.grey[700]),
           const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 13),
-            ),
-          ),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
         ],
       ),
     );

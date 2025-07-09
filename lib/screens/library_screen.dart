@@ -66,7 +66,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchBooks();
     _fetchKategori();
   }
 

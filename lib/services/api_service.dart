@@ -211,4 +211,67 @@ class ApiService {
       throw Exception('Gagal memuat daftar peminjaman: ${response.body}');
     }
   }
+
+  // ================================
+  // PENGEMBALIAN
+  // ================================
+ static Future<List<Map<String, dynamic>>> fetchPeminjamanAktif() async {
+  final token = await getToken();
+  final url = Uri.parse('$baseUrl/pengembalian');
+
+  final response = await http.get(
+    url,
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final List data = json.decode(response.body);
+
+    return data.map<Map<String, dynamic>>((item) => {
+      'id': item['id'],
+      'judul': item['buku']?['title'] ?? 'Tanpa Judul',
+      'penulis': item['buku']?['author'] ?? 'Tidak diketahui',
+      'status': item['status'],
+      'tanggal_pinjam': item['tanggal_peminjaman'],
+      'tenggat': item['tenggat_waktu'],
+      'cover': item['buku']?['cover_image'], // tambahkan kalau mau pakai
+      'user': item['user']?['name'] ?? '-',
+    }).toList();
+  } else {
+    throw Exception('Gagal memuat peminjaman');
+  }
 }
+
+    static Future<Map<String, dynamic>> returnBook(int peminjamanId) async {
+    final token = await getToken();
+    final url = Uri.parse('$baseUrl/pengembalian/kembalikan/$peminjamanId');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return {
+        'success': true,
+        'message': jsonData['message'],
+        'denda': jsonData['denda'],
+        'status': jsonData['status']
+      };
+    } else {
+      print('Gagal mengembalikan buku: ${response.body}');
+      return {
+        'success': false,
+        'error': 'Gagal mengembalikan buku'
+      };
+    }
+  }
+}
+

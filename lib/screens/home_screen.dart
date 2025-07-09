@@ -5,7 +5,8 @@ import 'borrow_screen.dart';
 import 'library_screen.dart';
 import 'account_screen.dart';
 import 'book_details_page.dart';
-import 'return_kosong.dart';
+import 'return_screen.dart';
+import 'return_list_screen.dart';
 import '../services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,25 +31,17 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _loadRecommendedBooks();
 
-    BookModel dummyBook = BookModel(
-      id: 1,
-      coverUrl: '',
-      categoryId: 'Fantasi',
-      title: 'The Hobbit',
-      author: 'J.R.R. Tolkien',
-      publicationYear: '1937',
-      description: 'Petualangan Bilbo Baggins mencari harta naga Smaug.',
-      publisher: 'Allen & Unwin', // << tambahkan ini
-    );
 
     // Jangan assign _buildHomeContent() di sini
+
     _pages = [
       Container(), // placeholder dulu
       const LibraryScreen(),
       BorrowScreen(),
-      const ReturnScreen(),
+      const ReturnListScreen(),
       AccountScreen(username: widget.userName),
     ];
+
   }
 
   Future<void> _loadRecommendedBooks() async {
@@ -313,17 +306,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
-                book.coverUrl,
+                book.coverUrl ?? '',
                 width: 70,
                 height: 100,
                 fit: BoxFit.cover,
                 errorBuilder:
-                    (context, error, stackTrace) => Container(
+                    (context, error, stackTrace) {
+                      print("IMAGE ERROR: $error");
+                      return Container(
                       width: 70,
                       height: 100,
                       color: Colors.grey[300],
                       child: const Icon(Icons.broken_image),
-                    ),
+                    );
+                    },
               ),
             ),
             const SizedBox(width: 12),
