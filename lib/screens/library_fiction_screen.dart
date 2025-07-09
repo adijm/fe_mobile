@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'library_child_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_education_screen.dart';
+import 'book_details_page.dart';
 
 class LibraryFictionScreen extends StatelessWidget {
   const LibraryFictionScreen({super.key});
@@ -15,7 +16,8 @@ class LibraryFictionScreen extends StatelessWidget {
         'title': 'Laskar Pelangi',
         'author': 'Andrea Hirata',
         'year': '2005',
-        'description': 'Cerita inspiratif tentang perjuangan anak-anak di Belitung.'
+        'description':
+            'Cerita inspiratif tentang perjuangan anak-anak di Belitung.',
       },
       {
         'image': 'assets/the_hobbit.jpg',
@@ -23,23 +25,24 @@ class LibraryFictionScreen extends StatelessWidget {
         'title': 'The Hobbit',
         'author': 'J.R.R. Tolkien',
         'year': '1937',
-        'description': 'Petualangan hobbit Bilbo Baggins di dunia Middle-earth.'
+        'description':
+            'Petualangan hobbit Bilbo Baggins di dunia Middle-earth.',
       },
       {
         'image': 'assets/rahasia_pelangi.jpg',
-        'category': 'Fiksi Anak',
+        'category': 'Fiksi anak',
         'title': 'Rahasia Pelangi',
         'author': 'Riawany Elita',
         'year': '2018',
-        'description': 'Kisah persahabatan dan keajaiban pelangi.'
+        'description': 'Kisah persahabatan dan keajaiban pelangi.',
       },
       {
         'image': 'assets/perahu_kertas.jpg',
-        'category': 'Fiksi Dewasa',
+        'category': 'Fiksi dewasa',
         'title': 'Perahu Kertas',
         'author': 'Amelia',
         'year': '2009',
-        'description': 'Cerita romantis tentang mimpi dan cinta anak muda.'
+        'description': 'Cerita romantis tentang mimpi dan cinta anak muda.',
       },
     ];
 
@@ -60,8 +63,7 @@ class LibraryFictionScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Tab kategori
+            // Tab Kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -74,10 +76,8 @@ class LibraryFictionScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // List Buku
+            // Daftar Buku
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -94,16 +94,7 @@ class LibraryFictionScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => BookDetailsPage(
-                              imagePath: book['image']!,
-                              title: book['title']!,
-                              author: book['author']!,
-                              genre: book['category']!,
-                              year: book['year']!,
-                              description: book['description']!,
-                            ),
-                          ),
+                          MaterialPageRoute(builder: (_) => BookDetailsPage()),
                         );
                       },
                       child: Row(
@@ -149,7 +140,11 @@ class LibraryFictionScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.green),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.green,
+                          ),
                         ],
                       ),
                     );
@@ -160,55 +155,56 @@ class LibraryFictionScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      // Bottom navigation lengkap
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // tab Library
+        currentIndex: 1,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (_) => HomeScreen(
-                userName: 'Guest', // atau dari login session
-                initialIndex: index,
-              ),
-            ),
-            (route) => false,
-          );
+          Navigator.pop(context);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), label: 'Return'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_turned_in),
+            label: 'Return',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
-    Widget targetScreen;
-    switch (label) {
-      case 'Child':
-        targetScreen = const LibraryChildScreen();
-        break;
-      case 'Humanities':
-        targetScreen = const LibraryHumanitiesScreen();
-        break;
-      case 'Education':
-        targetScreen = const LibraryEducationScreen();
-        break;
-      case 'Fiction':
-      default:
-        targetScreen = const LibraryFictionScreen();
-    }
-
+  Widget _buildCategoryTab(
+    BuildContext context,
+    String label, {
+    bool isActive = false,
+  }) {
     return InkWell(
       onTap: () {
+        Widget targetScreen;
+        switch (label) {
+          case 'Child':
+            targetScreen = const LibraryChildScreen();
+            break;
+          case 'Humanities':
+            targetScreen = const LibraryHumanitiesScreen();
+            break;
+          case 'Education':
+            targetScreen = const LibraryEducationScreen();
+            break;
+          case 'Fiction':
+          default:
+            targetScreen = const LibraryFictionScreen();
+        }
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => targetScreen),

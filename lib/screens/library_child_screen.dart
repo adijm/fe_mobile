@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; 
 import 'library_fiction_screen.dart';
 import 'library_humanities_screen.dart';
 import 'library_education_screen.dart';
@@ -17,7 +16,8 @@ class LibraryChildScreen extends StatelessWidget {
         'title': 'Dongeng Anak Terlengkap',
         'author': 'Kak Thifa',
         'year': '2021',
-        'description': 'Kumpulan dongeng anak dengan pesan moral yang baik dan ilustrasi menarik.'
+        'description':
+            'Kumpulan dongeng anak dengan pesan moral yang baik dan ilustrasi menarik.',
       },
       {
         'image': 'assets/belajar_membaca.png',
@@ -25,7 +25,8 @@ class LibraryChildScreen extends StatelessWidget {
         'title': 'Belajar Membaca',
         'author': 'Amazing Kids',
         'year': '2020',
-        'description': 'Buku edukatif untuk membantu anak belajar membaca secara menyenangkan.'
+        'description':
+            'Buku edukatif untuk membantu anak belajar membaca secara menyenangkan.',
       },
       {
         'image': 'assets/berhitung.png',
@@ -33,7 +34,8 @@ class LibraryChildScreen extends StatelessWidget {
         'title': 'Belajar Berhitung & mengenal angka',
         'author': 'Zahra, S.Pd.',
         'year': '2019',
-        'description': 'Mengenalkan konsep angka dan berhitung dasar untuk anak usia dini.'
+        'description':
+            'Mengenalkan konsep angka dan berhitung dasar untuk anak usia dini.',
       },
       {
         'image': 'assets/akhlak.jpg',
@@ -41,7 +43,8 @@ class LibraryChildScreen extends StatelessWidget {
         'title': 'Akhlak',
         'author': 'Mutiara Sani',
         'year': '2022',
-        'description': 'Buku pembelajaran akhlak untuk membentuk karakter positif pada anak.'
+        'description':
+            'Buku pembelajaran akhlak untuk membentuk karakter positif pada anak.',
       },
     ];
 
@@ -97,14 +100,15 @@ class LibraryChildScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BookDetailsPage(
-                              imagePath: book['image']!,
-                              title: book['title']!,
-                              author: book['author']!,
-                              genre: book['category']!,
-                              year: book['year']!,
-                              description: book['description']!,
-                            ),
+                            builder:
+                                (_) => BookDetailsPage(
+                                  coverUrl: book['cover_url']!,
+                                  title: book['title']!,
+                                  author: book['author']!,
+                                  genre: book['category']!,
+                                  year: book['year']!,
+                                  description: book['description']!,
+                                ),
                           ),
                         );
                       },
@@ -151,7 +155,11 @@ class LibraryChildScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.green),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.green,
+                          ),
                         ],
                       ),
                     );
@@ -162,38 +170,40 @@ class LibraryChildScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      // Bottom Navigation yang langsung ke HomeScreen dan aktifkan tab yang sesuai
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // posisi Library
+        currentIndex: 1,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (_) => HomeScreen(
-                userName: 'Guest', // atau isi dari auth kamu
-                initialIndex: index,
-              ),
-            ),
-            (route) => false,
-          );
+          Navigator.pop(context);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), label: 'Return'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_turned_in),
+            label: 'Return',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
+          ),
         ],
       ),
     );
   }
 
-  // Widget tab kategori
-  Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
+  // Widget untuk tab kategori dengan navigasi ke file yang sesuai
+  Widget _buildCategoryTab(
+    BuildContext context,
+    String label, {
+    bool isActive = false,
+  }) {
     return InkWell(
       onTap: () {
         Widget targetScreen;
@@ -208,7 +218,7 @@ class LibraryChildScreen extends StatelessWidget {
             targetScreen = const LibraryEducationScreen();
             break;
           default:
-            targetScreen = const LibraryChildScreen();
+            targetScreen = const LibraryChildScreen(); // untuk "Child"
         }
 
         Navigator.push(

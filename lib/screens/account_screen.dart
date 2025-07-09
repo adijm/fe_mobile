@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'saved_books_screen.dart';
 import 'account_setting_screen.dart';
 import 'history_screen.dart';
@@ -9,58 +8,6 @@ class AccountScreen extends StatelessWidget {
   final String username;
 
   const AccountScreen({Key? key, required this.username}) : super(key: key);
-
-  Future<void> _handleLogout(BuildContext context) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.logout, size: 48, color: Colors.red),
-              const SizedBox(height: 16),
-              const Text(
-                "Are you sure you want to\nLog Out?",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text("Yes, Log Out",
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text("Cancel",
-                        style: TextStyle(color: Colors.grey)),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    if (confirm == true) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,21 +50,21 @@ class AccountScreen extends StatelessWidget {
                 _buildStatCard(
                   context,
                   icon: Icons.book,
-                  count: '0 Buku',
+                  count: '2 Buku',
                   label: 'Dipinjam',
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const HistoryScreen()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
                 _buildStatCard(
                   context,
                   icon: Icons.check_circle,
-                  count: '0 Buku',
+                  count: '1 Buku',
                   label: 'Dikembalikan',
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const HistoryScreen()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
                 _buildStatCard(
@@ -126,8 +73,8 @@ class AccountScreen extends StatelessWidget {
                   count: 'Rp 0',
                   label: 'Denda',
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const HistoryScreen()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                   },
                 ),
               ],
@@ -151,8 +98,8 @@ class AccountScreen extends StatelessWidget {
                     icon: Icons.bookmark,
                     label: 'Saved Books',
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const SavedBooksScreen()));
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => const SavedBooksScreen()));
                     },
                   ),
                   _AccountOption(
@@ -171,22 +118,72 @@ class AccountScreen extends StatelessWidget {
                     icon: Icons.history,
                     label: 'History',
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const HistoryScreen()));
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => const HistoryScreen()));
                     },
                   ),
                   _AccountOption(
                     icon: Icons.help,
                     label: 'Help and Support',
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const HelpSupportScreen()));
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => const HelpSupportScreen()));
                     },
                   ),
                   _AccountOption(
                     icon: Icons.logout,
                     label: 'Log Out',
-                    onTap: () => _handleLogout(context),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.logout, size: 48, color: Colors.red),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "Are you sure you want to\nLog Out?",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                ),
+                                const SizedBox(height: 24),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12)),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          '/login',
+                                          (route) => false,
+                                        );
+                                      },
+                                      child: const Text("Yes, Log Out",
+                                          style: TextStyle(color: Colors.white)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: const Text("Cancel",
+                                          style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),

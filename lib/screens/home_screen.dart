@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _pages = [
       Container(), // placeholder dulu
       const LibraryScreen(),
-      BorrowScreen(book: dummyBook),
+      BorrowScreen(),
       const ReturnScreen(),
       AccountScreen(username: widget.userName),
     ];
@@ -297,17 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder:
-                (_) => BookDetailsPage(
-                  imagePath: book.coverUrl,
-                  title: book.title,
-                  author: book.author,
-                  genre: book.publisher,
-                  year: book.publicationYear,
-                  description: book.description,
-                ),
-          ),
+          MaterialPageRoute(builder: (_) => BookDetailsPage(book: book)),
         );
       },
       child: Container(

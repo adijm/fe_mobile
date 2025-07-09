@@ -19,18 +19,16 @@ class BookModel {
     required this.coverUrl,
   });
 
-factory BookModel.fromJson(Map<String, dynamic> json) {
-
-
-  return BookModel(
-    id: json['id'],
-    title: json['title'] ?? '',
-    author: json['author'] ?? '',
-    publisher: json['publisher'] ?? 'Unknown Publisher',
-    publicationYear: json['publication_year']?.toString() ?? 'Unknown Year',
-    categoryId: json['category_id']?.toString() ?? 'Unknown Category',
-    description: json['description'] ?? 'No description available.',
-    coverUrl: json['cover_url'] ?? '',
-  );
-}
+  factory BookModel.fromJson(Map<String, dynamic> json) {
+    return BookModel(
+      id: json['id'],
+      title: json['title'] ?? '',
+      author: json['author'] ?? '',
+      publisher: json['publisher'] ?? 'Unknown Publisher',
+      publicationYear: json['publication_year']?.toString() ?? 'Unknown Year',
+      categoryId: json['category_id']?.toString() ?? 'Unknown Category',
+      description: json['description'] ?? 'No description available.',
+      coverUrl: json['cover_url'] ?? '',
+    );
+  }
 }

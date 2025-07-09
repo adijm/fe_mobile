@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'library_child_screen.dart';
 import 'library_education_screen.dart';
 import 'library_fiction_screen.dart';
-import 'book_details_page.dart';
-import 'home_screen.dart';
+import 'book_details_page.dart'; // ← tambahkan ini
 
 class LibraryHumanitiesScreen extends StatelessWidget {
   const LibraryHumanitiesScreen({super.key});
@@ -18,7 +17,7 @@ class LibraryHumanitiesScreen extends StatelessWidget {
         'author': 'Jean-Jacques Rousseau',
         'year': '1762',
         'description':
-            'Karya klasik filsafat politik yang membahas hubungan antara individu dan negara serta konsep kontrak sosial.'
+            'Karya klasik filsafat politik yang membahas hubungan antara individu dan negara serta konsep kontrak sosial.',
       },
       {
         'image': 'assets/orientalism_humanities.png',
@@ -27,7 +26,7 @@ class LibraryHumanitiesScreen extends StatelessWidget {
         'author': 'Edward W Said',
         'year': '1978',
         'description':
-            'Buku penting dalam kajian post-kolonial yang mengkritik cara pandang Barat terhadap dunia Timur.'
+            'Buku penting dalam kajian post-kolonial yang mengkritik cara pandang Barat terhadap dunia Timur.',
       },
       {
         'image': 'assets/the_republic_human.png',
@@ -36,7 +35,7 @@ class LibraryHumanitiesScreen extends StatelessWidget {
         'author': 'Plato',
         'year': '380 SM',
         'description':
-            'Dialog filsafat yang membahas keadilan, bentuk negara ideal, dan peran filsuf dalam pemerintahan.'
+            'Dialog filsafat yang membahas keadilan, bentuk negara ideal, dan peran filsuf dalam pemerintahan.',
       },
       {
         'image': 'assets/sapiens.jpg',
@@ -45,7 +44,7 @@ class LibraryHumanitiesScreen extends StatelessWidget {
         'author': 'Yuval Noah Harari',
         'year': '2011',
         'description':
-            'Sejarah ringkas umat manusia, dari zaman purba hingga era modern, dengan pendekatan interdisipliner.'
+            'Sejarah ringkas umat manusia, dari zaman purba hingga era modern, dengan pendekatan interdisipliner.',
       },
     ];
 
@@ -66,6 +65,8 @@ class LibraryHumanitiesScreen extends StatelessWidget {
                 ),
               ),
             ),
+
+            // Tab Kategori
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -78,7 +79,10 @@ class LibraryHumanitiesScreen extends StatelessWidget {
                 ],
               ),
             ),
+
             const SizedBox(height: 16),
+
+            // Daftar Buku
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -96,14 +100,7 @@ class LibraryHumanitiesScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BookDetailsPage(
-                              imagePath: book['image']!,
-                              title: book['title']!,
-                              author: book['author']!,
-                              genre: book['category']!,
-                              year: book['year']!,
-                              description: book['description']!,
-                            ),
+                            builder: (_) => BookDetailsPage(book: book),
                           ),
                         );
                       },
@@ -165,54 +162,60 @@ class LibraryHumanitiesScreen extends StatelessWidget {
           ],
         ),
       ),
+
+      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // Library tab
+        currentIndex: 1,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (_) => HomeScreen(
-                userName: 'Guest', // atau dari login session
-                initialIndex: index,
-              ),
-            ),
-            (route) => false,
-          );
+          Navigator.pop(context);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Borrow'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), label: 'Return'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_turned_in),
+            label: 'Return',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryTab(BuildContext context, String label, {bool isActive = false}) {
-    Widget targetScreen;
-    switch (label) {
-      case 'Child':
-        targetScreen = const LibraryChildScreen();
-        break;
-      case 'Education':
-        targetScreen = const LibraryEducationScreen();
-        break;
-      case 'Fiction':
-        targetScreen = const LibraryFictionScreen();
-        break;
-      case 'Humanities':
-      default:
-        targetScreen = const LibraryHumanitiesScreen();
-    }
-
+  Widget _buildCategoryTab(
+    BuildContext context,
+    String label, {
+    bool isActive = false,
+  }) {
     return InkWell(
       onTap: () {
-        Navigator.pushReplacement(
+        Widget targetScreen;
+        switch (label) {
+          case 'Child':
+            targetScreen = const LibraryChildScreen();
+            break;
+          case 'Education':
+            targetScreen = const LibraryEducationScreen();
+            break;
+          case 'Fiction':
+            targetScreen = const LibraryFictionScreen();
+            break;
+          case 'Humanities':
+          default:
+            targetScreen = const LibraryHumanitiesScreen();
+        }
+
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => targetScreen),
         );

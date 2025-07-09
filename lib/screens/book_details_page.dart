@@ -1,102 +1,87 @@
 import 'package:flutter/material.dart';
 import 'models/book_model.dart';
 import 'borrow_screen.dart';
+import '../services/api_service.dart';
 
 class BookDetailsPage extends StatelessWidget {
-  final String imagePath;
-  final String title;
-  final String author;
-  final String genre;
-  final String year;
-  final String description;
+  final BookModel book;
 
-  const BookDetailsPage({
-    required this.imagePath,
-    required this.title,
-    required this.author,
-    required this.genre,
-    required this.year,
-    required this.description,
-    super.key,
-  });
+  const BookDetailsPage({super.key, required this.book});
 
-  void _showBorrowDialog(BuildContext context, BookModel book) {
+  void _showBorrowDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Are you sure you want to borrow this book?',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BorrowScreen(book: book),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: const Text("Yes, Borrow book"),
-              ),
+      barrierDismissible: false, // agar tidak bisa ditutup manual saat loading
+      builder:
+          (dialogContext) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            content: const Text(
+              'Are you sure you want to borrow this book?',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.of(dialogContext).pop(),
                 child: const Text(
                   "Cancel",
                   style: TextStyle(color: Colors.red),
                 ),
               ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(dialogContext).pop(); // Tutup dialog konfirmasi
+
+                  // ✅ Tampilkan loading indicator
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder:
+                        (_) => const Center(child: CircularProgressIndicator()),
+                  );
+
+                  try {
+                    await ApiService.borrowBook(bukuId: book.id, jumlah: 1);
+
+                    // ✅ Tutup loading
+                    Navigator.of(context, rootNavigator: true).pop();
+
+                    // ✅ Navigasi ke BorrowScreen
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const BorrowScreen()),
+                    );
+                  } catch (e) {
+                    Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    ).pop(); // Tutup loading
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Gagal meminjam buku: $e")),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 20,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text("Yes, Borrow"),
+              ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfo(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value.isNotEmpty ? value : '-',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(color: Colors.grey)),
-      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final book = BookModel(
-      id: 0,
-      title: title,
-      author: author,
-      categoryId: genre,
-      publicationYear: year,
-      description: description,
-      publisher: '',
-      coverUrl: imagePath,
-    );
-
     return Scaffold(
       body: Column(
         children: [
@@ -135,16 +120,19 @@ class BookDetailsPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        imagePath.isNotEmpty ? imagePath : 'https://via.placeholder.com/150',
+                        book.coverUrl.isNotEmpty
+                            ? book.coverUrl
+                            : 'https://via.placeholder.com/150',
                         height: 220,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.broken_image),
+                        errorBuilder:
+                            (_, __, ___) =>
+                                const Icon(Icons.broken_image, size: 80),
                       ),
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      title,
+                      book.title,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -152,21 +140,12 @@ class BookDetailsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      author,
+                      book.author,
                       style: const TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildInfo("Halaman", "326"),
-                        _buildInfo("Salinan", "12"),
-                        _buildInfo("Release", year),
-                      ],
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      description,
+                      book.description,
                       textAlign: TextAlign.justify,
                       style: const TextStyle(fontSize: 14, height: 1.5),
                     ),
@@ -174,7 +153,7 @@ class BookDetailsPage extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => _showBorrowDialog(context, book),
+                        onPressed: () => _showBorrowDialog(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           padding: const EdgeInsets.symmetric(vertical: 14),

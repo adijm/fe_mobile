@@ -70,14 +70,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
     _fetchKategori();
   }
 
-List<BookModel> _filterBooks(List<BookModel> books) {
-  final query = _searchQuery.toLowerCase();
-  return books.where((book) {
-    return book.title.toLowerCase().contains(query) ||
-        book.author.toLowerCase().contains(query) ||
-        book.categoryId.toLowerCase().contains(query);
-  }).toList();
-}
+  List<BookModel> _filterBooks(List<BookModel> books) {
+    final query = _searchQuery.toLowerCase();
+    return books.where((book) {
+      return book.title.toLowerCase().contains(query) ||
+          book.author.toLowerCase().contains(query) ||
+          book.categoryId.toLowerCase().contains(query);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,24 +242,7 @@ List<BookModel> _filterBooks(List<BookModel> books) {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder:
-                      (_) => BookDetailsPage(
-                        imagePath:
-                            validCoverUrl
-                                ? book.coverUrl
-                                : 'https://via.placeholder.com/150',
-                        title: book.title,
-                        author: book.author,
-                        genre:
-                            book.categoryId != null
-                                ? book.categoryId!
-                                : 'Unknown',
-                        year: book.publicationYear ?? 'Unknown',
-                        description:
-                            book.description ?? 'No description available.',
-                      ),
-                ),
+                MaterialPageRoute(builder: (_) => BookDetailsPage(book: book)),
               );
             },
             child: Container(
@@ -313,7 +296,9 @@ List<BookModel> _filterBooks(List<BookModel> books) {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  book.categoryId.isNotEmpty ? book.categoryId : 'Unknown Category',
+                                  book.categoryId.isNotEmpty
+                                      ? book.categoryId
+                                      : 'Unknown Category',
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey,

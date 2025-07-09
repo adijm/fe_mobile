@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:forumapp/screens/models/book_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:forumapp/screens/models/pinjam_buku_response.dart';
+import 'package:forumapp/screens/models/peminjaman_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.1.3:8000/api';
+  static const String baseUrl = 'http://127.0.0.1:8000/api';
 
   // ================================
   // AUTH
@@ -96,10 +98,7 @@ class ApiService {
 
     final response = await http.get(
       url,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
@@ -111,42 +110,36 @@ class ApiService {
     }
   }
 
-
   // ================================
   // KATEGORI BUKU
   // ================================
 
-static Future<List<Map<String, dynamic>>> fetchKategoriBuku() async {
-  final token = await getToken();
-  final url = Uri.parse('$baseUrl/kategori'); // ✅ GANTI DENGAN ENDPOINT YANG BENAR
+  static Future<List<Map<String, dynamic>>> fetchKategoriBuku() async {
+    final token = await getToken();
+    final url = Uri.parse(
+      '$baseUrl/kategori',
+    ); // ✅ GANTI DENGAN ENDPOINT YANG BENAR
 
-  final response = await http.get(
-    url,
-    headers: {
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
+    final response = await http.get(
+      url,
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
+    );
 
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> jsonData = json.decode(response.body);
-    
-    // Ambil list dari key 'data'
-    final List kategori = jsonData['data'];
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonData = json.decode(response.body);
 
-    return kategori.map<Map<String, dynamic>>((item) {
-      return {
-        'id': item['id'],
-        'nama': item['name'] ?? 'Tanpa Nama',
-      };
-    }).toList();
-  } else {
-    print('STATUS KATEGORI: ${response.statusCode}');
-    print('BODY KATEGORI: ${response.body}');
-    throw Exception('Gagal memuat kategori buku');
+      // Ambil list dari key 'data'
+      final List kategori = jsonData['data'];
+
+      return kategori.map<Map<String, dynamic>>((item) {
+        return {'id': item['id'], 'nama': item['name'] ?? 'Tanpa Nama'};
+      }).toList();
+    } else {
+      print('STATUS KATEGORI: ${response.statusCode}');
+      print('BODY KATEGORI: ${response.body}');
+      throw Exception('Gagal memuat kategori buku');
+    }
   }
-}
-
 
   static Future<List<BookModel>> fetchBukuByKategori(int kategoriId) async {
     final token = await getToken();
@@ -154,10 +147,7 @@ static Future<List<Map<String, dynamic>>> fetchKategoriBuku() async {
 
     final response = await http.get(
       url,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
@@ -169,44 +159,56 @@ static Future<List<Map<String, dynamic>>> fetchKategoriBuku() async {
     }
   }
 
-
-
   // ================================
   // PEMINJAMAN
   // ================================
 
-  static Future<Map<String, dynamic>> borrowBook({
+  static Future<PinjamBukuResponse> borrowBook({
     required int bukuId,
-    required int userId,
-    required String tenggatWaktu,
+    required int jumlah,
   }) async {
     final token = await getToken();
-    if (token == null) {
-      return {'success': false, 'error': 'Token tidak ditemukan. Login dulu.'};
+    final userId = await getUserId();
+
+    if (token == null || userId == null) {
+      throw Exception('Anda harus login terlebih dahulu');
     }
 
-    final url = Uri.parse('$baseUrl/pinjamBuku');
-
     final response = await http.post(
-      url,
+      Uri.parse('$baseUrl/pinjamBuku'),
       headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
       },
       body: jsonEncode({
         'buku_id': bukuId,
         'user_id': userId,
-        'tenggat_waktu': tenggatWaktu,
+        'jumlah': jumlah,
       }),
     );
 
-    if (response.statusCode == 201) {
-      final data = json.decode(response.body);
-      return {'success': true, 'data': data};
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return PinjamBukuResponse.fromJson(json.decode(response.body));
     } else {
-      print('Peminjaman gagal: ${response.body}');
-      return {'success': false, 'error': response.body};
+      throw Exception('Gagal meminjam buku: ${response.body}');
+    }
+  }
+
+  static Future<List<PeminjamanModel>> fetchUserPeminjaman() async {
+    final token = await getToken();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/peminjaman'),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final List list = jsonData['data'];
+      return list.map((e) => PeminjamanModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Gagal memuat daftar peminjaman: ${response.body}');
     }
   }
 }
